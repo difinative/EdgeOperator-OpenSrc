@@ -13,4 +13,13 @@ resources:
   kind: ScEdge
   path: github.com/difinative/Edge-Operator/api/v1
   version: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: difinative
+  group: operator
+  kind: GameEdge
+  path: github.com/difinative/Edge-Operator/api/v1
+  version: v1
 version: "3"

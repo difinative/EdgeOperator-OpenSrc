@@ -8,6 +8,32 @@ rules:
 - apiGroups:
   - operator.difinative
   resources:
+  - gameedges
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - operator.difinative
+  resources:
+  - gameedges/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - operator.difinative
+  resources:
+  - gameedges/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - operator.difinative
+  resources:
   - scedges
   verbs:
   - create
