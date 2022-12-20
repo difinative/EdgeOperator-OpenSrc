@@ -23,19 +23,6 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
-type Vitals struct {
-	UpOrDown   string `json:"upordown,omitempty"`
-	FreeMemory string `json:"freememory,omitempty"`
-	Temperatur int    `json:"temperature,omitempty"`
-	// InferenceServerLastUpdate int    `json:"inferenceserverlastupdate,omitempty"`
-}
-
-type Camera struct {
-	Resolution string `json:"resolution,omitempty"`
-	UpOrDown   string `json:"upordown,omitempty"`
-	// IP            string `json:"ip,omitempty"`
-}
-
 // ScEdgeSpec defines the desired state of ScEdge
 type ScEdgeSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
