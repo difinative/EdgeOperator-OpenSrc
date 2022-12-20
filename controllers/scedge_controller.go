@@ -22,9 +22,12 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/event"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
 	operatorv1 "github.com/difinative/Edge-Operator/api/v1"
+	controllerutils "github.com/difinative/Edge-Operator/controllers/utils"
 )
 
 // ScEdgeReconciler reconciles a ScEdge object
@@ -58,5 +61,26 @@ func (r *ScEdgeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 func (r *ScEdgeReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&operatorv1.ScEdge{}).
+		WithEventFilter(predicate.Funcs{
+
+			//Handle create event
+			CreateFunc: func(ce event.CreateEvent) bool {
+				controllerutils.InitScEdge(ce)
+				return false
+			},
+
+			//Handle delete event
+			DeleteFunc: func(de event.DeleteEvent) bool {
+				controllerutils.DeleteScEdge(de)
+
+				return false
+			},
+
+			//Handle update event
+			UpdateFunc: func(ue event.UpdateEvent) bool {
+				controllerutils.UpdateForScEdge(ue)
+				return true
+			},
+		}).
 		Complete(r)
 }
