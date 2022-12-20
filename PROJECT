@@ -1,0 +1,6 @@
+domain: difinative
+layout:
+- go.kubebuilder.io/v3
+projectName: edge-operator
+repo: github.com/difinative/Edge-Operator
+version: "3"
