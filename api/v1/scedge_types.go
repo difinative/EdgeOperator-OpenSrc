@@ -23,24 +23,46 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
+type Vitals struct {
+	UpOrDown   string `json:"upordown,omitempty"`
+	FreeMemory string `json:"freememory,omitempty"`
+	Temperatur int    `json:"temperature,omitempty"`
+	// InferenceServerLastUpdate int    `json:"inferenceserverlastupdate,omitempty"`
+}
+
+type Camera struct {
+	Resolution string `json:"resolution,omitempty"`
+	UpOrDown   string `json:"upordown,omitempty"`
+	// IP            string `json:"ip,omitempty"`
+}
+
 // ScEdgeSpec defines the desired state of ScEdge
 type ScEdgeSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Foo is an example field of ScEdge. Edit scedge_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	// Foo string `json:"foo,omitempty"`
+	Edgename string            `json:"edgename,omitempty"`
+	Type     string            `json:"type,omitempty"`
+	Vitals   Vitals            `json:"vitals,omitempty"`
+	Cameras  map[string]Camera `json:"cameras,omitempty"`
 }
 
 // ScEdgeStatus defines the observed state of ScEdge
 type ScEdgeStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+	Vitals  Vitals            `json:"vitals,omitempty"`
+	Cameras map[string]Camera `json:"cameras,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 
+// +kubebuilder:printcolumn:name="Up/Down?",type="string",JSONPath=`.status.vitals.upordown`
+// +kubebuilder:printcolumn:name="Free Memory",type="string",JSONPath=`.status.vitals.freememory`
+// +kubebuilder:printcolumn:name="Temperatur",type="string",JSONPath=`.status.vitals.temperature`
 // ScEdge is the Schema for the scedges API
 type ScEdge struct {
 	metav1.TypeMeta   `json:",inline"`
