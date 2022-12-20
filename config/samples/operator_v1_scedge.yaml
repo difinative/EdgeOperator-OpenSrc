@@ -1,0 +1,12 @@
+apiVersion: operator.difinative/v1
+kind: ScEdge
+metadata:
+  labels:
+    app.kubernetes.io/name: scedge
+    app.kubernetes.io/instance: scedge-sample
+    app.kubernetes.io/part-of: edge-operator
+    app.kuberentes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: edge-operator
+  name: scedge-sample
+spec:
+  # TODO(user): Add fields here
