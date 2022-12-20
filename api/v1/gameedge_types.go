@@ -29,18 +29,27 @@ type GameEdgeSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Foo is an example field of GameEdge. Edit gameedge_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	// Foo string `json:"foo,omitempty"`
+	Edgename string            `json:"edgename,omitempty"`
+	Type     string            `json:"type,omitempty"`
+	Vitals   Vitals            `json:"vitals,omitempty"`
+	Cameras  map[string]Camera `json:"cameras,omitempty"`
 }
 
 // GameEdgeStatus defines the observed state of GameEdge
 type GameEdgeStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+	Vitals  Vitals            `json:"vitals,omitempty"`
+	Cameras map[string]Camera `json:"cameras,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 
+// +kubebuilder:printcolumn:name="Up/Down?",type="string",JSONPath=`.status.vitals.upordown`
+// +kubebuilder:printcolumn:name="Free Memory",type="string",JSONPath=`.status.vitals.freememory`
+// +kubebuilder:printcolumn:name="Temperatur",type="string",JSONPath=`.status.vitals.temperature`
 // GameEdge is the Schema for the gameedges API
 type GameEdge struct {
 	metav1.TypeMeta   `json:",inline"`

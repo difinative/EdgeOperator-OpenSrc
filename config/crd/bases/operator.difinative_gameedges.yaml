@@ -15,7 +15,17 @@ spec:
     singular: gameedge
   scope: Namespaced
   versions:
-  - name: v1
+  - additionalPrinterColumns:
+    - jsonPath: .status.vitals.upordown
+      name: Up/Down?
+      type: string
+    - jsonPath: .status.vitals.freememory
+      name: Free Memory
+      type: string
+    - jsonPath: .status.vitals.temperature
+      name: Temperatur
+      type: string
+    name: v1
     schema:
       openAPIV3Schema:
         description: GameEdge is the Schema for the gameedges API
@@ -35,13 +45,55 @@ spec:
           spec:
             description: GameEdgeSpec defines the desired state of GameEdge
             properties:
-              foo:
+              cameras:
+                additionalProperties:
+                  properties:
+                    resolution:
+                      type: string
+                    upordown:
+                      type: string
+                  type: object
+                type: object
+              edgename:
                 description: Foo is an example field of GameEdge. Edit gameedge_types.go
-                  to remove/update
+                  to remove/update Foo string `json:"foo,omitempty"`
                 type: string
+              type:
+                type: string
+              vitals:
+                properties:
+                  freememory:
+                    type: string
+                  temperature:
+                    type: integer
+                  upordown:
+                    type: string
+                type: object
             type: object
           status:
             description: GameEdgeStatus defines the observed state of GameEdge
+            properties:
+              cameras:
+                additionalProperties:
+                  properties:
+                    resolution:
+                      type: string
+                    upordown:
+                      type: string
+                  type: object
+                type: object
+              vitals:
+                description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                  of cluster Important: Run "make" to regenerate code after modifying
+                  this file'
+                properties:
+                  freememory:
+                    type: string
+                  temperature:
+                    type: integer
+                  upordown:
+                    type: string
+                type: object
             type: object
         type: object
     served: true
