@@ -49,7 +49,7 @@ type ScEdgeStatus struct {
 
 // +kubebuilder:printcolumn:name="Up/Down?",type="string",JSONPath=`.status.vitals.upordown`
 // +kubebuilder:printcolumn:name="Free Memory",type="string",JSONPath=`.status.vitals.freememory`
-// +kubebuilder:printcolumn:name="Temperatur",type="string",JSONPath=`.status.vitals.temperature`
+// +kubebuilder:printcolumn:name="Temperature",type="string",JSONPath=`.status.vitals.temperature`
 // ScEdge is the Schema for the scedges API
 type ScEdge struct {
 	metav1.TypeMeta   `json:",inline"`
