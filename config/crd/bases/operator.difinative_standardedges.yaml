@@ -15,7 +15,17 @@ spec:
     singular: standardedge
   scope: Namespaced
   versions:
-  - name: v1
+  - additionalPrinterColumns:
+    - jsonPath: .status.vitals.upordown
+      name: Up/Down?
+      type: string
+    - jsonPath: .status.vitals.freememory
+      name: Free Memory
+      type: string
+    - jsonPath: .status.vitals.temperature
+      name: Temperature
+      type: string
+    name: v1
     schema:
       openAPIV3Schema:
         description: StandardEdge is the Schema for the standardedges API
@@ -35,16 +45,37 @@ spec:
           spec:
             description: StandardEdgeSpec defines the desired state of StandardEdge
             properties:
-              foo:
-                description: Foo is an example field of StandardEdge. Edit standardedge_types.go
-                  to remove/update
+              edgename:
                 type: string
+              type:
+                type: string
+              vitals:
+                properties:
+                  freememory:
+                    type: string
+                  temperature:
+                    type: integer
+                  upordown:
+                    type: string
+                type: object
             type: object
           status:
             description: StandardEdgeStatus defines the observed state of StandardEdge
+            properties:
+              vitals:
+                description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                  of cluster Important: Run "make" to regenerate code after modifying
+                  this file'
+                properties:
+                  freememory:
+                    type: string
+                  temperature:
+                    type: integer
+                  upordown:
+                    type: string
+                type: object
             type: object
         type: object
     served: true
     storage: true
-    subresources:
-      status: {}
+    subresources: {}

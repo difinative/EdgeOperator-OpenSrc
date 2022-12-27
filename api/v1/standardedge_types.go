@@ -38,9 +38,6 @@ type StandardEdgeSpec struct {
 }
 
 // StandardEdgeStatus defines the observed state of StandardEdge
-// +kubebuilder:printcolumn:name="Up/Down?",type="string",JSONPath=`.status.vitals.upordown`
-// +kubebuilder:printcolumn:name="Free Memory",type="string",JSONPath=`.status.vitals.freememory`
-// +kubebuilder:printcolumn:name="Temperature",type="string",JSONPath=`.status.vitals.temperature`
 type StandardEdgeStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
@@ -50,6 +47,10 @@ type StandardEdgeStatus struct {
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
+
+// +kubebuilder:printcolumn:name="Up/Down?",type="string",JSONPath=`.status.vitals.upordown`
+// +kubebuilder:printcolumn:name="Free Memory",type="string",JSONPath=`.status.vitals.freememory`
+// +kubebuilder:printcolumn:name="Temperature",type="string",JSONPath=`.status.vitals.temperature`
 
 // StandardEdge is the Schema for the standardedges API
 type StandardEdge struct {
