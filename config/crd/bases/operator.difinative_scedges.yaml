@@ -23,7 +23,7 @@ spec:
       name: Free Memory
       type: string
     - jsonPath: .status.vitals.temperature
-      name: Temperatur
+      name: Temperature
       type: string
     name: v1
     schema:

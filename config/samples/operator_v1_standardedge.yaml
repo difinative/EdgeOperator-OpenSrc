@@ -1,0 +1,12 @@
+apiVersion: operator.difinative/v1
+kind: StandardEdge
+metadata:
+  labels:
+    app.kubernetes.io/name: standardedge
+    app.kubernetes.io/instance: standardedge-sample
+    app.kubernetes.io/part-of: edge-operator
+    app.kuberentes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: edge-operator
+  name: standardedge-sample
+spec:
+  # TODO(user): Add fields here

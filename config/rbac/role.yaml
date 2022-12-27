@@ -57,3 +57,29 @@ rules:
   - get
   - patch
   - update
+- apiGroups:
+  - operator.difinative
+  resources:
+  - standardedges
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - operator.difinative
+  resources:
+  - standardedges/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - operator.difinative
+  resources:
+  - standardedges/status
+  verbs:
+  - get
+  - patch
+  - update
