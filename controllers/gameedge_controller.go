@@ -22,9 +22,12 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/event"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
 	operatorv1 "github.com/difinative/Edge-Operator/api/v1"
+	controllerutils "github.com/difinative/Edge-Operator/controllers/utils/Game-Edge"
 )
 
 // GameEdgeReconciler reconciles a GameEdge object
@@ -57,6 +60,24 @@ func (r *GameEdgeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 // SetupWithManager sets up the controller with the Manager.
 func (r *GameEdgeReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&operatorv1.GameEdge{}).
+		For(&operatorv1.GameEdge{}).WithEventFilter(
+		predicate.Funcs{
+			CreateFunc: func(ce event.CreateEvent) bool {
+				controllerutils.InitGameEdge(ce)
+				return false
+			},
+
+			DeleteFunc: func(de event.DeleteEvent) bool {
+				controllerutils.DeleteGameEdge(de)
+				return false
+			},
+
+			UpdateFunc: func(ue event.UpdateEvent) bool {
+				controllerutils.UpdateForGameEdge(ue)
+
+				return false
+			},
+		},
+	).
 		Complete(r)
 }

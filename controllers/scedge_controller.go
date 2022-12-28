@@ -27,7 +27,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
 	operatorv1 "github.com/difinative/Edge-Operator/api/v1"
-	controllerutils "github.com/difinative/Edge-Operator/controllers/utils"
+	controllerutils "github.com/difinative/Edge-Operator/controllers/utils/Sc-Edge"
 )
 
 // ScEdgeReconciler reconciles a ScEdge object

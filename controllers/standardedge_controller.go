@@ -22,9 +22,12 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/event"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
 	operatorv1 "github.com/difinative/Edge-Operator/api/v1"
+	controllerutils "github.com/difinative/Edge-Operator/controllers/utils/Standard-Edge"
 )
 
 // StandardEdgeReconciler reconciles a StandardEdge object
@@ -57,6 +60,23 @@ func (r *StandardEdgeReconciler) Reconcile(ctx context.Context, req ctrl.Request
 // SetupWithManager sets up the controller with the Manager.
 func (r *StandardEdgeReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&operatorv1.StandardEdge{}).
+		For(&operatorv1.StandardEdge{}).WithEventFilter(
+		predicate.Funcs{
+			CreateFunc: func(ce event.CreateEvent) bool {
+				controllerutils.InitStEdge(ce)
+				return false
+			},
+
+			DeleteFunc: func(de event.DeleteEvent) bool {
+				controllerutils.DeleteScEdge(de)
+				return false
+			},
+
+			UpdateFunc: func(ue event.UpdateEvent) bool {
+				controllerutils.UpdateForScEdge(ue)
+				return false
+			},
+		},
+	).
 		Complete(r)
 }
