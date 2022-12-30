@@ -1,7 +1,6 @@
 package v1
 
 import (
-	v1 "github.com/difinative/Edge-Operator/api/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
@@ -35,8 +34,8 @@ func (c *V1Client) ScEdges(namespace string) ScEdgeInterface {
 func NewConfig(c *rest.Config) (*V1Client, error) {
 	config := *c
 	config.ContentConfig.GroupVersion = &schema.GroupVersion{
-		Group:   v1.GroupVersion.Group,
-		Version: v1.GroupVersion.Version,
+		Group:   "operator.difinative",
+		Version: "v1",
 	}
 
 	config.APIPath = "/apis"
