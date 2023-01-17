@@ -31,8 +31,10 @@ type ScEdgeSpec struct {
 	// Foo is an example field of ScEdge. Edit scedge_types.go to remove/update
 	// Foo string `json:"foo,omitempty"`
 	Edgename string            `json:"edgename,omitempty"`
+	MacId    string            `json:"macid,omitempty"`
 	Type     string            `json:"type,omitempty"`
 	Vitals   Vitals            `json:"vitals,omitempty"`
+	LTU      string            `json:"ltu,omitempty"`
 	Cameras  map[string]Camera `json:"cameras,omitempty"`
 }
 

@@ -32,6 +32,8 @@ type StandardEdgeSpec struct {
 	// Foo string `json:"foo,omitempty"`
 
 	Edgename string `json:"edgename,omitempty"`
+	MacId    string `json:"macid,omitempty"`
+	LTU      string `json:"ltu,omitempty"`
 	Type     string `json:"type,omitempty"`
 	Vitals   Vitals `json:"vitals,omitempty"`
 	// Cameras  map[string]Camera `json:"cameras,omitempty"`
