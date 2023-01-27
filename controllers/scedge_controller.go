@@ -26,7 +26,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
-	operatorv1 "github.com/difinative/Edge-Operator/api/v1"
+	v1 "github.com/difinative/Edge-Operator/api/v1"
 	controllerutils "github.com/difinative/Edge-Operator/controllers/utils/Sc-Edge"
 )
 
@@ -53,6 +53,12 @@ func (r *ScEdgeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 	_ = log.FromContext(ctx)
 
 	// TODO(user): your logic here
+	edgeList := v1.ScEdgeList{}
+	err := r.Client.List(ctx, &edgeList, &client.ListOptions{})
+	if err != nil {
+		ctrl.Log.Error(err, "Error while trying to get the list of standard edge")
+	}
+	controllerutils.CheckLTU(edgeList, r.Client)
 
 	return ctrl.Result{}, nil
 }
@@ -60,7 +66,7 @@ func (r *ScEdgeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 // SetupWithManager sets up the controller with the Manager.
 func (r *ScEdgeReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&operatorv1.ScEdge{}).
+		For(&v1.ScEdge{}).
 		WithEventFilter(predicate.Funcs{
 
 			//Handle create event
@@ -78,6 +84,7 @@ func (r *ScEdgeReconciler) SetupWithManager(mgr ctrl.Manager) error {
 
 			//Handle update event
 			UpdateFunc: func(ue event.UpdateEvent) bool {
+
 				controllerutils.UpdateForScEdge(ue)
 				return true
 			},
