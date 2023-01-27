@@ -48,6 +48,10 @@ spec:
               cameras:
                 additionalProperties:
                   properties:
+                    ip:
+                      type: string
+                    jpeg:
+                      type: string
                     resolution:
                       type: string
                     upordown:
@@ -58,11 +62,28 @@ spec:
                 description: Foo is an example field of ScEdge. Edit scedge_types.go
                   to remove/update Foo string `json:"foo,omitempty"`
                 type: string
+              ltu:
+                type: string
+              macid:
+                type: string
               type:
                 type: string
               vitals:
                 properties:
                   freememory:
+                    type: string
+                  processes:
+                    additionalProperties:
+                      properties:
+                        error:
+                          type: string
+                        status:
+                          type: string
+                      type: object
+                    type: object
+                  sqnet:
+                    type: string
+                  teleportstatus:
                     type: string
                   temperature:
                     type: integer
@@ -76,6 +97,10 @@ spec:
               cameras:
                 additionalProperties:
                   properties:
+                    ip:
+                      type: string
+                    jpeg:
+                      type: string
                     resolution:
                       type: string
                     upordown:
@@ -88,6 +113,19 @@ spec:
                   this file'
                 properties:
                   freememory:
+                    type: string
+                  processes:
+                    additionalProperties:
+                      properties:
+                        error:
+                          type: string
+                        status:
+                          type: string
+                      type: object
+                    type: object
+                  sqnet:
+                    type: string
+                  teleportstatus:
                     type: string
                   temperature:
                     type: integer

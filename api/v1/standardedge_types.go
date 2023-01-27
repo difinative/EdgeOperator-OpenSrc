@@ -53,7 +53,6 @@ type StandardEdgeStatus struct {
 // +kubebuilder:printcolumn:name="Up/Down?",type="string",JSONPath=`.status.vitals.upordown`
 // +kubebuilder:printcolumn:name="Free Memory",type="string",JSONPath=`.status.vitals.freememory`
 // +kubebuilder:printcolumn:name="Temperature",type="string",JSONPath=`.status.vitals.temperature`
-
 // StandardEdge is the Schema for the standardedges API
 type StandardEdge struct {
 	metav1.TypeMeta   `json:",inline"`
