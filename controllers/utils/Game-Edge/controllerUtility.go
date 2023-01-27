@@ -1,12 +1,17 @@
 package controllerutils
 
 import (
+	"context"
 	"strconv"
 	"strings"
+	"time"
 
 	operatorv1 "github.com/difinative/Edge-Operator/api/v1"
+	"github.com/difinative/Edge-Operator/controllers/utils"
+	"k8s.io/apimachinery/pkg/api/errors"
 	ctrl "sigs.k8s.io/controller-runtime"
 
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/event"
 )
 
@@ -75,6 +80,26 @@ func CameraCheck(camerasSpec *map[string]operatorv1.Camera, cameraStatus *map[st
 		}
 		if strings.EqualFold(strings.ToLower(c.UpOrDown), strings.ToLower("Down")) {
 			ctrl.Log.Info("Camera is not working", "Edge", name, "Camera", cname)
+		}
+	}
+}
+
+func CheckLTU(edgeList operatorv1.GameEdgeList, clt client.Client) {
+
+	edges := edgeList.Items
+	now := time.Now()
+	for _, se := range edges {
+		ltu, err := time.Parse("", se.Spec.LTU)
+		if err != nil {
+			ctrl.Log.Error(err, "Error while trying to parse the LTU time", "edge name", se.Name, " LTU", se.Spec.LTU)
+		}
+		if now.Sub(ltu).Minutes() > 30 {
+			se.Status.Vitals.UpOrDown = utils.DOWN
+			se.Status.Vitals.SqNet = utils.INACTIVE
+			err := clt.Status().Update(context.TODO(), &se, &client.UpdateOptions{})
+			for err != nil && errors.IsConflict(err) {
+				err = clt.Update(context.TODO(), &se, &client.UpdateOptions{})
+			}
 		}
 	}
 }

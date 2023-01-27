@@ -1,12 +1,17 @@
 package controllerutils
 
 import (
-	"strconv"
+	"context"
+	"fmt"
 	"strings"
+	"time"
 
 	operatorv1 "github.com/difinative/Edge-Operator/api/v1"
+	"github.com/difinative/Edge-Operator/controllers/utils"
+	"k8s.io/apimachinery/pkg/api/errors"
 	ctrl "sigs.k8s.io/controller-runtime"
 
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/event"
 )
 
@@ -30,26 +35,20 @@ func DeleteScEdge(de event.DeleteEvent) {
 }
 
 func UpdateForScEdge(ue event.UpdateEvent) {
+	fmt.Println("Updated")
 	if ue.ObjectNew != ue.ObjectOld {
 		edge := ue.ObjectNew.(*operatorv1.ScEdge)
 		if edge.Status.Vitals.UpOrDown == "Down" {
 			ctrl.Log.Info("Edge is Down >>>", "edge name", edge.Name, " status", edge.Status.Vitals.UpOrDown)
-		} else if edge.Status.Vitals.FreeMemory != "" {
-			availableMemory := string(edge.Status.Vitals.FreeMemory[:len(edge.Status.Vitals.FreeMemory)-1])
-			am, err := strconv.Atoi(availableMemory)
-			if err != nil {
-				ctrl.Log.Info("Erro while tring to convert available memory from string to int")
-				ctrl.Log.Info(">>>", "Error", err)
-			}
-			availableMemoryInSpec := string(edge.Spec.Vitals.FreeMemory[:len(edge.Spec.Vitals.FreeMemory)-1])
-			amspec, err := strconv.Atoi(availableMemoryInSpec)
-			if err != nil {
-				ctrl.Log.Info("Erro while tring to convert available memory from string to int")
-				ctrl.Log.Info(">>>", "Error", err)
-			}
-			if am < amspec {
-				ctrl.Log.Info("Edge has available memory less than expected >>>", "edge name", edge.Name, "expected", edge.Spec.Vitals.FreeMemory, "actual", edge.Status.Vitals.FreeMemory)
-			}
+		}
+		if edge.Status.Vitals.FreeMemory != "" {
+			utils.CheckFreeMemory(edge.Status.Vitals.FreeMemory, edge.Spec.Vitals.FreeMemory, edge.Name)
+		}
+		if edge.Status.Vitals.Temperature != 0 {
+			utils.CheckTemperature(edge.Status.Vitals.Temperature, edge.Spec.Vitals.Temperature, edge.Name)
+		}
+		if edge.Status.Vitals.TeleportStatus != "" {
+			utils.CheckTeleport(edge.Status.Vitals.TeleportStatus, edge.Spec.Vitals.TeleportStatus, edge.Name)
 		}
 		CameraCheck(&edge.Spec.Cameras, &edge.Status.Cameras, edge.Spec.Edgename)
 	}
@@ -75,6 +74,26 @@ func CameraCheck(camerasSpec *map[string]operatorv1.Camera, cameraStatus *map[st
 		}
 		if strings.EqualFold(strings.ToLower(c.UpOrDown), strings.ToLower("Down")) {
 			ctrl.Log.Info("Camera is not working", "Edge", name, "Camera", cname)
+		}
+	}
+}
+
+func CheckLTU(edgeList operatorv1.ScEdgeList, clt client.Client) {
+
+	edges := edgeList.Items
+	now := time.Now()
+	for _, se := range edges {
+		ltu, err := time.Parse("", se.Spec.LTU)
+		if err != nil {
+			ctrl.Log.Error(err, "Error while trying to parse the LTU time", "edge name", se.Name, " LTU", se.Spec.LTU)
+		}
+		if now.Sub(ltu).Minutes() > 30 {
+			se.Status.Vitals.UpOrDown = utils.DOWN
+			se.Status.Vitals.SqNet = utils.INACTIVE
+			err := clt.Status().Update(context.TODO(), &se, &client.UpdateOptions{})
+			for err != nil && errors.IsConflict(err) {
+				err = clt.Update(context.TODO(), &se, &client.UpdateOptions{})
+			}
 		}
 	}
 }
