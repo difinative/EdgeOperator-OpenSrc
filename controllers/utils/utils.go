@@ -12,13 +12,14 @@ func IsStrEquals(str1, str2 string) bool {
 }
 
 func CheckFreeMemory(statusMem, specMem, edgeName string) {
-	availableMemory := string(statusMem[:len(statusMem)-1])
+	availableMemory := strings.Trim(statusMem[:len(statusMem)-1], " ")
+
 	am, err := strconv.Atoi(availableMemory)
 	if err != nil {
 		ctrl.Log.Info("Erro while tring to convert available memory from string to int")
 		ctrl.Log.Info(">>>", "Error", err)
 	}
-	availableMemoryInSpec := string(specMem[:len(specMem)-1])
+	availableMemoryInSpec := strings.Trim(string(specMem[:len(specMem)-1]), " ")
 	amspec, err := strconv.Atoi(availableMemoryInSpec)
 	if err != nil {
 		ctrl.Log.Info("Erro while tring to convert available memory from string to int")
