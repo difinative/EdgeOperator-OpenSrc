@@ -34,7 +34,6 @@ type ScEdgeSpec struct {
 	MacId    string            `json:"macid,omitempty"`
 	Type     string            `json:"type,omitempty"`
 	Vitals   Vitals            `json:"vitals,omitempty"`
-	LTU      string            `json:"ltu,omitempty"`
 	Cameras  map[string]Camera `json:"cameras,omitempty"`
 }
 
@@ -44,6 +43,7 @@ type ScEdgeStatus struct {
 	// Important: Run "make" to regenerate code after modifying this file
 	Vitals  Vitals            `json:"vitals,omitempty"`
 	Cameras map[string]Camera `json:"cameras,omitempty"`
+	LTU     string            `json:"ltu,omitempty"`
 }
 
 //+kubebuilder:object:root=true

@@ -62,8 +62,6 @@ spec:
                 description: Foo is an example field of ScEdge. Edit scedge_types.go
                   to remove/update Foo string `json:"foo,omitempty"`
                 type: string
-              ltu:
-                type: string
               macid:
                 type: string
               type:
@@ -107,6 +105,8 @@ spec:
                       type: string
                   type: object
                 type: object
+              ltu:
+                type: string
               vitals:
                 description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
                   of cluster Important: Run "make" to regenerate code after modifying
