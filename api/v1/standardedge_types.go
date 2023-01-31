@@ -33,7 +33,6 @@ type StandardEdgeSpec struct {
 
 	Edgename string `json:"edgename,omitempty"`
 	MacId    string `json:"macid,omitempty"`
-	LTU      string `json:"ltu,omitempty"`
 	Type     string `json:"type,omitempty"`
 	Vitals   Vitals `json:"vitals,omitempty"`
 	// Cameras  map[string]Camera `json:"cameras,omitempty"`
@@ -44,6 +43,7 @@ type StandardEdgeStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 	Vitals Vitals `json:"vitals,omitempty"`
+	LTU    string `json:"ltu,omitempty"`
 	// Cameras map[string]Camera `json:"cameras,omitempty"`
 }
 
