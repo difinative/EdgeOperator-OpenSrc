@@ -2,6 +2,8 @@ package controllerutils
 
 import (
 	"context"
+	"reflect"
+	"strings"
 	"time"
 
 	operatorv1 "github.com/difinative/Edge-Operator/api/v1"
@@ -34,48 +36,56 @@ func DeleteScEdge(de event.DeleteEvent) {
 
 func UpdateForScEdge(ue event.UpdateEvent) {
 	if ue.ObjectNew != ue.ObjectOld {
-		edge := ue.ObjectNew.(*operatorv1.StandardEdge)
-		if utils.IsStrEquals(edge.Status.Vitals.TeleportStatus, utils.INACTIVE) {
-			ctrl.Log.Info("Edge is Down >>>", "edge name", edge.Name, " status", edge.Status.Vitals.UpOrDown)
-		}
-		if edge.Status.Vitals.FreeMemory != "" {
-			utils.CheckFreeMemory(edge.Status.Vitals.FreeMemory, edge.Spec.Vitals.FreeMemory, edge.Name)
-		}
-		if edge.Status.Vitals.Temperature != 0 {
-			utils.CheckTemperature(edge.Status.Vitals.Temperature, edge.Spec.Vitals.Temperature, edge.Name)
-		}
-		if edge.Status.Vitals.TeleportStatus != "" {
-			utils.CheckTeleport(edge.Status.Vitals.TeleportStatus, edge.Spec.Vitals.TeleportStatus, edge.Name)
-		}
-		if edge.Status.Vitals.UpOrDown == utils.DOWN {
-			ctrl.Log.Info("Following edge is down>>>", "Name", edge.Name)
-		}
-		if edge.Status.Vitals.SqNet == utils.INACTIVE {
-			ctrl.Log.Info("Following edge is not connected to sqnet>>>", "Name", edge.Name)
+		edge := ue.ObjectNew.(*operatorv1.ScEdge)
+		old_edge := ue.ObjectOld.(*operatorv1.ScEdge)
+		if !reflect.DeepEqual(edge.Status, old_edge.Status) {
+			if utils.IsStrEquals(edge.Status.Vitals.TeleportStatus, utils.INACTIVE) {
+				ctrl.Log.Info("Edge is Down >>>", "edge name", edge.Name, " status", edge.Status.Vitals.UpOrDown)
+			}
+			if edge.Status.Vitals.FreeMemory != "" {
+				utils.CheckFreeMemory(edge.Status.Vitals.FreeMemory, edge.Spec.Vitals.FreeMemory, edge.Name)
+			}
+			if edge.Status.Vitals.Temperature != 0 {
+				utils.CheckTemperature(edge.Status.Vitals.Temperature, edge.Spec.Vitals.Temperature, edge.Name)
+			}
+			if edge.Status.Vitals.TeleportStatus != "" {
+				utils.CheckTeleport(edge.Status.Vitals.TeleportStatus, edge.Spec.Vitals.TeleportStatus, edge.Name)
+			}
+			if edge.Status.Vitals.UpOrDown == utils.DOWN {
+				ctrl.Log.Info("Following edge is down>>>", "Name", edge.Name)
+			}
+			if edge.Status.Vitals.SqNet == utils.INACTIVE {
+				ctrl.Log.Info("Following edge is not connected to sqnet>>>", "Name", edge.Name)
+			}
 		}
 	}
 }
 
-func CheckLTU(edgeList operatorv1.StandardEdgeList, clt client.Client, ctx context.Context) {
+func CheckLTU(edgeList operatorv1.StandardEdgeList, clt client.Client) {
 
 	edges := edgeList.Items
-
-	now := time.Now().UTC()
+	now := time.Now()
 	for _, se := range edges {
-		ltuspec := se.Spec.LTU
-		ltu, err := time.Parse(time.RFC850, ltuspec)
-		if err != nil {
-			ctrl.Log.Error(err, "Error while trying to parse the LTU time", "edge name", se.Name, " LTU", ltuspec)
+		if se.Status.LTU == "" {
+			continue
 		}
-		if now.Sub(ltu).Minutes() > 1 {
+		ltu, err := time.Parse(time.RFC850, se.Status.LTU)
+		if err != nil {
+			ctrl.Log.Error(err, "Error while trying to parse the LTU time", "edge name", se.Name, " LTU", se.Status.LTU)
+		}
+		if now.Sub(ltu).Minutes() > 3 {
 			se.Status.Vitals.UpOrDown = utils.DOWN
 			se.Status.Vitals.SqNet = utils.INACTIVE
-			se.Spec.LTU = time.Now().Format(time.RFC850)
-
-			err := clt.Update(ctx, &se)
-			// fmt.Println(err)
+			err := clt.Status().Update(context.TODO(), &se, &client.UpdateOptions{})
 			for err != nil && errors.IsConflict(err) {
-				err = clt.Update(ctx, &se, &client.UpdateOptions{})
+				err = clt.Update(context.TODO(), &se, &client.UpdateOptions{})
+			}
+		} else if strings.EqualFold(strings.ToLower(se.Status.Vitals.UpOrDown), strings.ToLower(utils.DOWN)) {
+			se.Status.Vitals.UpOrDown = utils.UP
+			se.Status.Vitals.SqNet = utils.ACTIVE
+			err := clt.Status().Update(context.TODO(), &se, &client.UpdateOptions{})
+			for err != nil && errors.IsConflict(err) {
+				err = clt.Update(context.TODO(), &se, &client.UpdateOptions{})
 			}
 		}
 	}

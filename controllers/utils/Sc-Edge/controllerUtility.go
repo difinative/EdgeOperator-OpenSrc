@@ -2,7 +2,7 @@ package controllerutils
 
 import (
 	"context"
-	"fmt"
+	"reflect"
 	"strings"
 	"time"
 
@@ -35,22 +35,24 @@ func DeleteScEdge(de event.DeleteEvent) {
 }
 
 func UpdateForScEdge(ue event.UpdateEvent) {
-	fmt.Println("Updated")
 	if ue.ObjectNew != ue.ObjectOld {
 		edge := ue.ObjectNew.(*operatorv1.ScEdge)
-		if edge.Status.Vitals.UpOrDown == "Down" {
-			ctrl.Log.Info("Edge is Down >>>", "edge name", edge.Name, " status", edge.Status.Vitals.UpOrDown)
+		old_edge := ue.ObjectOld.(*operatorv1.ScEdge)
+		if !reflect.DeepEqual(edge.Status, old_edge.Status) {
+			if strings.EqualFold(strings.ToLower(edge.Status.Vitals.UpOrDown), strings.ToLower(utils.DOWN)) {
+				ctrl.Log.Info("Edge is Down >>>", "edge name", edge.Name, " status", edge.Status.Vitals.UpOrDown)
+			}
+			if edge.Status.Vitals.FreeMemory != "" {
+				utils.CheckFreeMemory(edge.Status.Vitals.FreeMemory, edge.Spec.Vitals.FreeMemory, edge.Name)
+			}
+			if edge.Status.Vitals.Temperature != 0 {
+				utils.CheckTemperature(edge.Status.Vitals.Temperature, edge.Spec.Vitals.Temperature, edge.Name)
+			}
+			if edge.Status.Vitals.TeleportStatus != "" {
+				utils.CheckTeleport(edge.Status.Vitals.TeleportStatus, edge.Spec.Vitals.TeleportStatus, edge.Name)
+			}
+			CameraCheck(&edge.Spec.Cameras, &edge.Status.Cameras, edge.Spec.Edgename)
 		}
-		if edge.Status.Vitals.FreeMemory != "" {
-			utils.CheckFreeMemory(edge.Status.Vitals.FreeMemory, edge.Spec.Vitals.FreeMemory, edge.Name)
-		}
-		if edge.Status.Vitals.Temperature != 0 {
-			utils.CheckTemperature(edge.Status.Vitals.Temperature, edge.Spec.Vitals.Temperature, edge.Name)
-		}
-		if edge.Status.Vitals.TeleportStatus != "" {
-			utils.CheckTeleport(edge.Status.Vitals.TeleportStatus, edge.Spec.Vitals.TeleportStatus, edge.Name)
-		}
-		CameraCheck(&edge.Spec.Cameras, &edge.Status.Cameras, edge.Spec.Edgename)
 	}
 }
 
@@ -72,7 +74,7 @@ func CameraCheck(camerasSpec *map[string]operatorv1.Camera, cameraStatus *map[st
 				ctrl.Log.Info("Camera resolution is not 1600x1200", "Edge", name, "Camera", cname, "Resolution", c.Resolution)
 			}
 		}
-		if strings.EqualFold(strings.ToLower(c.UpOrDown), strings.ToLower("Down")) {
+		if strings.EqualFold(strings.ToLower(c.UpOrDown), strings.ToLower(utils.DOWN)) {
 			ctrl.Log.Info("Camera is not working", "Edge", name, "Camera", cname)
 		}
 	}
@@ -83,13 +85,23 @@ func CheckLTU(edgeList operatorv1.ScEdgeList, clt client.Client) {
 	edges := edgeList.Items
 	now := time.Now()
 	for _, se := range edges {
-		ltu, err := time.Parse("", se.Spec.LTU)
-		if err != nil {
-			ctrl.Log.Error(err, "Error while trying to parse the LTU time", "edge name", se.Name, " LTU", se.Spec.LTU)
+		if se.Status.LTU == "" {
+			continue
 		}
-		if now.Sub(ltu).Minutes() > 30 {
+		ltu, err := time.Parse(time.RFC850, se.Status.LTU)
+		if err != nil {
+			ctrl.Log.Error(err, "Error while trying to parse the LTU time", "edge name", se.Name, " LTU", se.Status.LTU)
+		}
+		if now.Sub(ltu).Minutes() > 3 {
 			se.Status.Vitals.UpOrDown = utils.DOWN
 			se.Status.Vitals.SqNet = utils.INACTIVE
+			err := clt.Status().Update(context.TODO(), &se, &client.UpdateOptions{})
+			for err != nil && errors.IsConflict(err) {
+				err = clt.Update(context.TODO(), &se, &client.UpdateOptions{})
+			}
+		} else if strings.EqualFold(strings.ToLower(se.Status.Vitals.UpOrDown), strings.ToLower(utils.DOWN)) {
+			se.Status.Vitals.UpOrDown = utils.UP
+			se.Status.Vitals.SqNet = utils.ACTIVE
 			err := clt.Status().Update(context.TODO(), &se, &client.UpdateOptions{})
 			for err != nil && errors.IsConflict(err) {
 				err = clt.Update(context.TODO(), &se, &client.UpdateOptions{})
