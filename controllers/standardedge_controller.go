@@ -18,6 +18,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -57,7 +58,10 @@ func (r *StandardEdgeReconciler) Reconcile(ctx context.Context, req ctrl.Request
 	if err != nil {
 		ctrl.Log.Error(err, "Error while trying to get the list of standard edge")
 	}
-	controllerutils.CheckLTU(edgeList, r.Client, ctx)
+	controllerutils.CheckLTU(edgeList, r.Client)
+	fmt.Println(">>Reconcile loop called<<<")
+	fmt.Println("")
+	fmt.Println("")
 	return ctrl.Result{}, nil
 }
 
@@ -77,11 +81,17 @@ func (r *StandardEdgeReconciler) SetupWithManager(mgr ctrl.Manager) error {
 			},
 
 			UpdateFunc: func(ue event.UpdateEvent) bool {
-				controllerutils.UpdateForScEdge(ue)
+				fmt.Println("***************************", ue.ObjectNew.GetName(), "******************************")
+				if ue.ObjectNew == ue.ObjectOld {
+					return true
+				}
+				fmt.Println(">>> Calling update event <<<")
 
-				return true
+				controllerutils.UpdateForScEdge(ue)
+				fmt.Println("")
+				fmt.Println("")
+				return false
 			},
 		},
-	).
-		Complete(r)
+	).Complete(r)
 }
