@@ -52,6 +52,7 @@ type ScEdgeReconciler struct {
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.13.0/pkg/reconcile
 func (r *ScEdgeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
+	fmt.Println(">>Reconcile loop called<<<")
 
 	// TODO(user): your logic here
 	edgeList := v1.ScEdgeList{}
@@ -60,7 +61,6 @@ func (r *ScEdgeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctr
 		ctrl.Log.Error(err, "Error while trying to get the list of standard edge")
 	}
 	controllerutils.CheckLTU(edgeList, r.Client)
-	fmt.Println(">>Reconcile loop called<<<")
 	fmt.Println("")
 	fmt.Println("")
 	return ctrl.Result{}, nil

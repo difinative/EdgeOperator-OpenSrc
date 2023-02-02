@@ -2,6 +2,7 @@ package controllerutils
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 	"strings"
 	"time"
@@ -62,28 +63,35 @@ func CameraCheck(camerasSpec *map[string]operatorv1.Camera, cameraStatus *map[st
 
 	for cname, c := range *cameraStatus {
 		cspec, isPresent := (*camerasSpec)[cname]
+		if strings.EqualFold(strings.ToLower(c.UpOrDown), strings.ToLower(utils.DOWN)) {
+			ctrl.Log.Info("Camera is not working", "Edge", name, "Camera", cname)
+			continue
+		}
 		if isPresent {
 			if c.Resolution != cspec.Resolution {
 				ctrl.Log.Info("Camera resolution did not match", "Edge", name, "Camera", cname, "Resolution", c.Resolution)
 			}
-		} else {
-			ctrl.Log.Info("Following camera is not present in edge spec", "Camera", cname, "Resolution", c.Resolution, "Edge", name)
-			ctrl.Log.Info("Please add the camera spec in edge CR")
-
-			if c.Resolution != "1600x1200" {
-				ctrl.Log.Info("Camera resolution is not 1600x1200", "Edge", name, "Camera", cname, "Resolution", c.Resolution)
+			if c.IP != cspec.IP {
+				ctrl.Log.Info("Camera IP changed", "Edge", name, "Camera", cname)
 			}
+			if c.JPEG != "0" {
+				ctrl.Log.Info("Camera is sending corrupt image", "Edge", name, "Camera", cname)
+			}
+		} else {
+			ctrl.Log.Info("Following camera is not present in edge spec", "Camera", cname)
+			ctrl.Log.Info("Please add the camera spec in edge CR")
+			// if c.Resolution != "1600x1200" {
+			// 	ctrl.Log.Info("Camera resolution is not 1600x1200", "Edge", name, "Camera", cname, "Resolution", c.Resolution)
+			// }
 		}
-		if strings.EqualFold(strings.ToLower(c.UpOrDown), strings.ToLower(utils.DOWN)) {
-			ctrl.Log.Info("Camera is not working", "Edge", name, "Camera", cname)
-		}
+
 	}
 }
 
 func CheckLTU(edgeList operatorv1.ScEdgeList, clt client.Client) {
 
 	edges := edgeList.Items
-	now := time.Now()
+	now := time.Now().UTC()
 	for _, se := range edges {
 		if se.Status.LTU == "" {
 			continue
@@ -92,7 +100,11 @@ func CheckLTU(edgeList operatorv1.ScEdgeList, clt client.Client) {
 		if err != nil {
 			ctrl.Log.Error(err, "Error while trying to parse the LTU time", "edge name", se.Name, " LTU", se.Status.LTU)
 		}
-		if now.Sub(ltu).Minutes() > 3 {
+		fmt.Println("Edge name: ", se.Name)
+		fmt.Println("Edge LTU :", se.Status.LTU)
+		fmt.Println("TIME NOW :", now)
+		fmt.Println("DIFFERENCE :", now.Sub(ltu).Minutes())
+		if now.Sub(ltu).Minutes() > 20 {
 			se.Status.Vitals.UpOrDown = utils.DOWN
 			se.Status.Vitals.SqNet = utils.INACTIVE
 			err := clt.Status().Update(context.TODO(), &se, &client.UpdateOptions{})

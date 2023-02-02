@@ -2,6 +2,7 @@ package controllerutils
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 	"strings"
 	"time"
@@ -64,7 +65,7 @@ func UpdateForScEdge(ue event.UpdateEvent) {
 func CheckLTU(edgeList operatorv1.StandardEdgeList, clt client.Client) {
 
 	edges := edgeList.Items
-	now := time.Now()
+	now := time.Now().UTC()
 	for _, se := range edges {
 		if se.Status.LTU == "" {
 			continue
@@ -73,7 +74,11 @@ func CheckLTU(edgeList operatorv1.StandardEdgeList, clt client.Client) {
 		if err != nil {
 			ctrl.Log.Error(err, "Error while trying to parse the LTU time", "edge name", se.Name, " LTU", se.Status.LTU)
 		}
-		if now.Sub(ltu).Minutes() > 3 {
+		fmt.Println("Edge name: ", se.Name)
+		fmt.Println("Edge LTU :", se.Status.LTU)
+		fmt.Println("TIME NOW :", now)
+		fmt.Println("DIFFERENCE :", now.Sub(ltu).Minutes())
+		if now.Sub(ltu).Minutes() > 20 {
 			se.Status.Vitals.UpOrDown = utils.DOWN
 			se.Status.Vitals.SqNet = utils.INACTIVE
 			err := clt.Status().Update(context.TODO(), &se, &client.UpdateOptions{})
