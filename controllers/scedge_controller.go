@@ -93,7 +93,7 @@ func (r *ScEdgeReconciler) SetupWithManager(mgr ctrl.Manager) error {
 				}
 				fmt.Println(">>> Calling update event <<<")
 
-				controllerutils.UpdateForScEdge(ue)
+				controllerutils.UpdateForScEdge(ue, r.Client)
 				fmt.Println("")
 				fmt.Println("")
 				return false

@@ -35,24 +35,35 @@ func DeleteScEdge(de event.DeleteEvent) {
 
 }
 
-func UpdateForScEdge(ue event.UpdateEvent) {
+func UpdateForScEdge(ue event.UpdateEvent, clt client.Client) {
 	if ue.ObjectNew != ue.ObjectOld {
 		edge := ue.ObjectNew.(*operatorv1.ScEdge)
 		old_edge := ue.ObjectOld.(*operatorv1.ScEdge)
 		if !reflect.DeepEqual(edge.Status, old_edge.Status) {
 			if strings.EqualFold(strings.ToLower(edge.Status.Vitals.UpOrDown), strings.ToLower(utils.DOWN)) {
 				ctrl.Log.Info("Edge is Down >>>", "edge name", edge.Name, " status", edge.Status.Vitals.UpOrDown)
+				// edge.Status.Vitals.UpOrDown = utils.UP
+				// edge.Status.Vitals.SqNet = utils.ACTIVE
+				// err := clt.Status().Update(context.TODO(), edge, &client.UpdateOptions{})
+
+				// for err != nil && errors.IsConflict(err) {
+				// 	ctrl.Log.Error(err, "Error while trying to update the status", "Edge Name:", edge.Name)
+
+				// 	err = clt.Status().Update(context.TODO(), edge, &client.UpdateOptions{})
+				// }
+			} else {
+
+				if edge.Status.Vitals.FreeMemory != "" {
+					utils.CheckFreeMemory(edge.Status.Vitals.FreeMemory, edge.Spec.Vitals.FreeMemory, edge.Name)
+				}
+				if edge.Status.Vitals.Temperature != 0 {
+					utils.CheckTemperature(edge.Status.Vitals.Temperature, edge.Spec.Vitals.Temperature, edge.Name)
+				}
+				if edge.Status.Vitals.TeleportStatus != "" {
+					utils.CheckTeleport(edge.Status.Vitals.TeleportStatus, edge.Spec.Vitals.TeleportStatus, edge.Name)
+				}
+				CameraCheck(&edge.Spec.Cameras, &edge.Status.Cameras, edge.Spec.Edgename)
 			}
-			if edge.Status.Vitals.FreeMemory != "" {
-				utils.CheckFreeMemory(edge.Status.Vitals.FreeMemory, edge.Spec.Vitals.FreeMemory, edge.Name)
-			}
-			if edge.Status.Vitals.Temperature != 0 {
-				utils.CheckTemperature(edge.Status.Vitals.Temperature, edge.Spec.Vitals.Temperature, edge.Name)
-			}
-			if edge.Status.Vitals.TeleportStatus != "" {
-				utils.CheckTeleport(edge.Status.Vitals.TeleportStatus, edge.Spec.Vitals.TeleportStatus, edge.Name)
-			}
-			CameraCheck(&edge.Spec.Cameras, &edge.Status.Cameras, edge.Spec.Edgename)
 		}
 	}
 }
