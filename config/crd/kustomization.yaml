@@ -2,9 +2,6 @@
 # since it depends on service name and namespace that are out of this kustomize package.
 # It should be run by config/default
 resources:
-- bases/operator.difinative_scedges.yaml
-- bases/operator.difinative_gameedges.yaml
-- bases/operator.difinative_standardedges.yaml
 - bases/operator.difinative_edges.yaml
 - bases/operator.difinative_usecases.yaml
 - bases/operator.difinative_usecasevitals.yaml
@@ -34,3 +31,8 @@ patchesStrategicMerge:
 # the following config is for teaching kustomize how to do kustomization for CRDs.
 configurations:
 - kustomizeconfig.yaml
+
+# # To delete
+# - bases/operator.difinative_scedges.yaml
+# - bases/operator.difinative_gameedges.yaml
+# - bases/operator.difinative_standardedges.yaml
