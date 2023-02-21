@@ -109,3 +109,29 @@ rules:
   - get
   - patch
   - update
+- apiGroups:
+  - operator.difinative
+  resources:
+  - usecases
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - operator.difinative
+  resources:
+  - usecases/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - operator.difinative
+  resources:
+  - usecases/status
+  verbs:
+  - get
+  - patch
+  - update

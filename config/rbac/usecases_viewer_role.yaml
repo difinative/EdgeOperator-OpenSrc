@@ -1,0 +1,27 @@
+# permissions for end users to view usecases.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: usecases-viewer-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: edge-operator
+    app.kubernetes.io/part-of: edge-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: usecases-viewer-role
+rules:
+- apiGroups:
+  - operator.difinative
+  resources:
+  - usecases
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - operator.difinative
+  resources:
+  - usecases/status
+  verbs:
+  - get
