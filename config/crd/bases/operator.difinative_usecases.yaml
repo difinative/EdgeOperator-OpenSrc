@@ -35,10 +35,14 @@ spec:
           spec:
             description: UsecasesSpec defines the desired state of Usecases
             properties:
-              foo:
+              usecases:
+                additionalProperties:
+                  items:
+                    type: string
+                  type: array
                 description: Foo is an example field of Usecases. Edit usecases_types.go
                   to remove/update
-                type: string
+                type: object
             type: object
           status:
             description: UsecasesStatus defines the observed state of Usecases

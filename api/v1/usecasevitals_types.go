@@ -29,7 +29,8 @@ type UsecaseVitalsSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Foo is an example field of UsecaseVitals. Edit usecasevitals_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	Usecase string          `json:"usecase,omitempty"`
+	Vitals  []VitalsToCheck `json:"vitals,omitempty"`
 }
 
 // UsecaseVitalsStatus defines the observed state of UsecaseVitals

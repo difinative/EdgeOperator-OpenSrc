@@ -29,13 +29,18 @@ type EdgeSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Foo is an example field of Edge. Edit edge_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	Name    string `json:"name,omitempty"`
+	MacId   string `json:"macid,omitempty"`
+	Usecase string `json:"usecase,omitempty"`
+	Health  string `json:"health,omitempty"`
 }
 
 // EdgeStatus defines the observed state of Edge
 type EdgeStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+	Health         Health            `json:"health,omitempty"`
+	Usecase_Vitals map[string]string `json:"uc_vitals,omitempty"`
 }
 
 //+kubebuilder:object:root=true

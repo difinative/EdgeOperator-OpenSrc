@@ -1,6 +1,6 @@
 package v1
 
-type Vitals struct {
+type Health struct {
 	UpOrDown       string             `json:"upordown,omitempty"`
 	FreeMemory     string             `json:"freememory,omitempty"`
 	Temperature    int                `json:"temperature,omitempty"`
@@ -10,14 +10,21 @@ type Vitals struct {
 	// InferenceServerLastUpdate int    `json:"inferenceserverlastupdate,omitempty"`
 }
 
-type Camera struct {
-	Resolution string `json:"resolution,omitempty"`
-	UpOrDown   string `json:"upordown,omitempty"`
-	IP         string `json:"ip,omitempty"`
-	JPEG       string `json:"jpeg,omitempty"`
-}
+// type Camera struct {
+// 	Resolution string `json:"resolution,omitempty"`
+// 	UpOrDown   string `json:"upordown,omitempty"`
+// 	IP         string `json:"ip,omitempty"`
+// 	JPEG       string `json:"jpeg,omitempty"`
+// }
 
 type Process struct {
 	Status string `json:"status,omitempty"`
 	Error  string `json:"error,omitempty"`
+}
+
+type VitalsToCheck struct {
+	ParamName     string `json:"param_name,omitempty"`
+	Command       string `json:"command,omitempty"`
+	ConfigmapRef  string `json:"configmapref,omitempty"`
+	ExpectedValue string `json:"expectation,omitempty"`
 }
