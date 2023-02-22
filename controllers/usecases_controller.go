@@ -22,7 +22,9 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/event"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
 	operatorv1 "github.com/difinative/Edge-Operator/api/v1"
 )
@@ -58,5 +60,11 @@ func (r *UsecasesReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 func (r *UsecasesReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&operatorv1.Usecases{}).
+		WithEventFilter(
+			predicate.Funcs{
+				CreateFunc: func(ce event.CreateEvent) bool { return false },
+				DeleteFunc: func(ce event.DeleteEvent) bool { return false },
+			},
+		).
 		Complete(r)
 }

@@ -22,9 +22,12 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/event"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
 	operatorv1 "github.com/difinative/Edge-Operator/api/v1"
+	"github.com/difinative/Edge-Operator/controllers/utility"
 )
 
 // EdgeReconciler reconciles a Edge object
@@ -58,5 +61,20 @@ func (r *EdgeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 func (r *EdgeReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&operatorv1.Edge{}).
+		WithEventFilter(
+			predicate.Funcs{
+				CreateFunc: func(ce event.CreateEvent) bool {
+					//Check UC is there
+					edge := ce.Object.(*operatorv1.Edge)
+					utility.HandleCreateEvent(*edge)
+					return false
+				},
+				DeleteFunc: func(de event.DeleteEvent) bool {
+					edge := de.Object.(*operatorv1.Edge)
+					utility.HandleDeleteEvent(*edge)
+					return false
+				},
+			},
+		).
 		Complete(r)
 }
