@@ -92,25 +92,39 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err = (&controllers.ScEdgeReconciler{
+	// if err = (&controllers.ScEdgeReconciler{
+	// 	Client: mgr.GetClient(),
+	// 	Scheme: mgr.GetScheme(),
+	// }).SetupWithManager(mgr); err != nil {
+	// 	setupLog.Error(err, "unable to create controller", "controller", "ScEdge")
+	// 	os.Exit(1)
+	// }
+	// if err = (&controllers.GameEdgeReconciler{
+	// 	Client: mgr.GetClient(),
+	// 	Scheme: mgr.GetScheme(),
+	// }).SetupWithManager(mgr); err != nil {
+	// 	setupLog.Error(err, "unable to create controller", "controller", "GameEdge")
+	// 	os.Exit(1)
+	// }
+	// if err = (&controllers.StandardEdgeReconciler{
+	// 	Client: mgr.GetClient(),
+	// 	Scheme: mgr.GetScheme(),
+	// }).SetupWithManager(mgr); err != nil {
+	// 	setupLog.Error(err, "unable to create controller", "controller", "StandardEdge")
+	// 	os.Exit(1)
+	// }
+	if err = (&controllers.EdgeReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "ScEdge")
+		setupLog.Error(err, "unable to create controller", "controller", "Edge")
 		os.Exit(1)
 	}
-	if err = (&controllers.GameEdgeReconciler{
+	if err = (&controllers.UsecasesReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "GameEdge")
-		os.Exit(1)
-	}
-	if err = (&controllers.StandardEdgeReconciler{
-		Client: mgr.GetClient(),
-		Scheme: mgr.GetScheme(),
-	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "StandardEdge")
+		setupLog.Error(err, "unable to create controller", "controller", "Usecases")
 		os.Exit(1)
 	}
 	//+kubebuilder:scaffold:builder

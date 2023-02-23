@@ -1,0 +1,13 @@
+apiVersion: operator.difinative/v1
+kind: Edge
+metadata:
+  labels:
+    app.kubernetes.io/name: edge
+    app.kubernetes.io/instance: edge-sample
+    app.kubernetes.io/part-of: edge-operator
+    app.kuberentes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: edge-operator
+  name: de008
+spec:
+  # TODO(user): Add fields her
+  usecase: Game
