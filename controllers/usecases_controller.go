@@ -27,6 +27,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
 	operatorv1 "github.com/difinative/Edge-Operator/api/v1"
+	"github.com/difinative/Edge-Operator/controllers/utility"
+	"github.com/difinative/Edge-Operator/utils"
 )
 
 // UsecasesReconciler reconciles a Usecases object
@@ -64,6 +66,20 @@ func (r *UsecasesReconciler) SetupWithManager(mgr ctrl.Manager) error {
 			predicate.Funcs{
 				CreateFunc: func(ce event.CreateEvent) bool { return false },
 				DeleteFunc: func(ce event.DeleteEvent) bool { return false },
+
+				UpdateFunc: func(ue event.UpdateEvent) bool {
+					ucs := ue.ObjectNew.(*operatorv1.Usecases)
+					clt, err := utils.GetDynClt()
+					if err != nil {
+						return false
+					}
+
+					err = utility.CheckAndDeleteEmptyKeys(&clt, ucs)
+					if err != nil {
+						return false
+					}
+					return true
+				},
 			},
 		).
 		Complete(r)

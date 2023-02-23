@@ -29,7 +29,7 @@ type EdgeSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Foo is an example field of Edge. Edit edge_types.go to remove/update
-	Name    string `json:"name,omitempty"`
+	// Name    string `json:"name,omitempty"`
 	MacId   string `json:"macid,omitempty"`
 	Usecase string `json:"usecase,omitempty"`
 	Health  string `json:"health,omitempty"`

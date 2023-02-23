@@ -10,3 +10,4 @@ metadata:
   name: usecasevitals-sample
 spec:
   # TODO(user): Add fields here
+  usecase: Game

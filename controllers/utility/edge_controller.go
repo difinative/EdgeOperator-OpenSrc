@@ -14,52 +14,52 @@ func HandleCreateEvent(edge operatorv1.Edge) {
 	config, err := ctrl.GetConfig()
 	if err != nil {
 		ctrl.Log.Info("Error while getting the rest config", "Error", err)
-	} else {
-		// edge := ce.Object.(*operatorv1.Edge)
-		type_ := edge.Spec.Usecase
-		clt, err := dynamic.NewForConfig(config)
+		return
+	}
+	// edge := ce.Object.(*operatorv1.Edge)
+	type_ := edge.Spec.Usecase
+	clt, err := dynamic.NewForConfig(config)
+	if err != nil {
+		ctrl.Log.Info("Error while trying to get rest client", "Error", err)
+		return
+	}
+
+	uc, err := utils.GetUsescasesCr(&clt)
+	if err != nil && errors.IsNotFound(err) {
+		ctrl.Log.Info("No Usecases resource found, creating new resource")
+		uc := operatorv1.Usecases{}
+		uc.Spec.Usecases = make(map[string][]string)
+		ctrl.Log.Info("Creating usecases resources with Spec", "Usecase", type_, "Edge", edge.Name)
+
+		uc.Spec.Usecases[type_] = []string{edge.Name}
+		err := utils.CreateUsecasesCr(&clt, &uc)
 		if err != nil {
-			ctrl.Log.Info("Error while trying to get rest client", "Error", err)
-		} else {
-			uc, err := utils.GetUsescasesCr(&clt)
-
-			if err != nil && errors.IsNotFound(err) {
-				ctrl.Log.Info("No Usecases resource found, creating new resource")
-				uc := operatorv1.Usecases{}
-				uc.Spec.Usecases = make(map[string][]string)
-				ctrl.Log.Info("Creating usecases resources with Spec", "Usecase", type_, "Edge", edge.Spec.Name)
-
-				uc.Spec.Usecases[type_] = []string{edge.Spec.Name}
-				err := utils.CreateUsecasesCr(&clt, &uc)
-				if err != nil {
-					ctrl.Log.Error(err, "Error while trying to create Usecases resource")
-				}
-			} else {
-				ctrl.Log.Info("Usecases resource found, Updating the Usecases resource")
-				ctrl.Log.Info("Checking the following usecase is there or not", "Usecase", type_)
-
-				nameArr, isPresent := uc.Spec.Usecases[type_]
-				if isPresent {
-					ctrl.Log.Info("Usecase found in the resource")
-					ctrl.Log.Info("Updating usecases resources with Spec", "Usecase", type_, "Edge", edge.Spec.Name)
-
-					uc.Spec.Usecases[type_] = append(nameArr, edge.Spec.Name)
-				} else {
-					i := checkEdgeInArr(nameArr, edge.Spec.Name)
-					if i == -1 {
-						ctrl.Log.Info("Usecase found in the resource")
-						ctrl.Log.Info("Updating usecases resources with Spec", "Usecase", type_, "Edge", edge.Spec.Name)
-						if uc.Spec.Usecases != nil {
-							uc.Spec.Usecases[type_] = []string{edge.Spec.Name}
-						}
-					}
-				}
-				err = utils.UpdateUsecasesCr(&clt, &uc)
-				if err != nil {
-					ctrl.Log.Error(err, "Error while trying to Update Usecases resource")
-				}
-			}
+			ctrl.Log.Error(err, "Error while trying to create Usecases resource")
 		}
+		return
+	}
+	ctrl.Log.Info("Usecases resource found, Updating the Usecases resource")
+	ctrl.Log.Info("Checking the following usecase is there or not", "Usecase", type_)
+
+	nameArr, isPresent := uc.Spec.Usecases[type_]
+	if isPresent {
+		i := checkEdgeInArr(nameArr, edge.Name)
+		if i == -1 {
+			ctrl.Log.Info("Usecase found in the resource")
+			ctrl.Log.Info("Updating usecases resources with Spec", "Usecase", type_, "Edge", edge.Name)
+
+			uc.Spec.Usecases[type_] = append(nameArr, edge.Name)
+		}
+	} else {
+		ctrl.Log.Info("Usecase not found in the resource")
+		ctrl.Log.Info("Updating usecases resources with Spec", "Usecase", type_, "Edge", edge.Name)
+		if uc.Spec.Usecases != nil {
+			uc.Spec.Usecases[type_] = []string{edge.Name}
+		}
+	}
+	err = utils.UpdateUsecasesCr(&clt, &uc)
+	if err != nil {
+		ctrl.Log.Error(err, "Error while trying to Update Usecases resource")
 	}
 }
 
@@ -68,34 +68,78 @@ func HandleDeleteEvent(edge operatorv1.Edge) {
 	config, err := ctrl.GetConfig()
 	if err != nil {
 		ctrl.Log.Info("Error while getting the rest config", "Error", err)
-	} else {
-		// edge := ce.Object.(*operatorv1.Edge)
-		name := edge.Name
+		return
+	}
+	// edge := ce.Object.(*operatorv1.Edge)
+	name := edge.Name
 
-		type_ := edge.Spec.Usecase
-		clt, err := dynamic.NewForConfig(config)
+	type_ := edge.Spec.Usecase
+	clt, err := dynamic.NewForConfig(config)
+	if err != nil {
+		ctrl.Log.Info("Error while trying to get rest client", "Error", err)
+		return
+	}
+	ctrl.Log.Info("Getting usecases resource")
+	uc, err := utils.GetUsescasesCr(&clt)
+	if err != nil {
+		ctrl.Log.Error(err, "Error while trying to get the Usecases")
+		return
+	}
+	edgeArr := uc.Spec.Usecases[type_]
+	ctrl.Log.Info("Iterating over the array of edge")
+	i := checkEdgeInArr(edgeArr, name)
+	if i != -1 {
+		edgeArr = append(edgeArr[:i], edgeArr[i+1:]...)
+		uc.Spec.Usecases[type_] = edgeArr
+		err = utils.UpdateUsecasesCr(&clt, &uc)
 		if err != nil {
-			ctrl.Log.Info("Error while trying to get rest client", "Error", err)
-		} else {
-			ctrl.Log.Info("Getting usecases resource")
-			uc, err := utils.GetUsescasesCr(&clt)
-			if err != nil {
-				ctrl.Log.Error(err, "Error while trying to get the Usecases")
-				return
-			}
-			edgeArr := uc.Spec.Usecases[type_]
-			ctrl.Log.Info("Iterating over the array of edge")
-			i := checkEdgeInArr(edgeArr, name)
-			if i != -1 {
-				edgeArr = append(edgeArr[:i], edgeArr[i+1:]...)
-				uc.Spec.Usecases[type_] = edgeArr
-				err = utils.UpdateUsecasesCr(&clt, &uc)
-				if err != nil {
-					ctrl.Log.Error(err, "Error while trying to update the usecases resource")
-				}
-			}
+			ctrl.Log.Error(err, "Error while trying to update the usecases resource")
 		}
 	}
+}
+
+func UpdateEdgeUc(e operatorv1.Edge, prevUc string) {
+	ctrl.Log.Info("Deleting the following edge", "name", e.Name)
+	config, err := ctrl.GetConfig()
+	if err != nil {
+		ctrl.Log.Info("Error while getting the rest config", "Error", err)
+		return
+	}
+	// edge := ce.Object.(*operatorv1.Edge)
+	name := e.Name
+	type_ := e.Spec.Usecase
+
+	clt, err := dynamic.NewForConfig(config)
+	if err != nil {
+		ctrl.Log.Info("Error while trying to get rest client", "Error", err)
+		return
+	}
+
+	ctrl.Log.Info("Getting usecases resource")
+	uc, err := utils.GetUsescasesCr(&clt)
+	if err != nil {
+		ctrl.Log.Error(err, "Error while trying to get the Usecases")
+		return
+	}
+
+	edgeArr, isPresent := uc.Spec.Usecases[type_]
+	if isPresent {
+		edgeArr = append(edgeArr, name)
+		uc.Spec.Usecases[type_] = edgeArr
+	} else {
+		if uc.Spec.Usecases != nil {
+			uc.Spec.Usecases[type_] = []string{name}
+		}
+	}
+	prevEdgeArr := uc.Spec.Usecases[prevUc]
+	i := checkEdgeInArr(prevEdgeArr, name)
+	if i != -1 {
+		prevEdgeArr = append(prevEdgeArr[:i], prevEdgeArr[i+1:]...)
+	}
+	uc.Spec.Usecases[prevUc] = prevEdgeArr
+
+	utils.UpdateUsecasesCr(&clt, &uc)
+
 }
 
 func checkEdgeInArr(edgeArr []string, name string) int {

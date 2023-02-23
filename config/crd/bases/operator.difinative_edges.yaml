@@ -38,10 +38,8 @@ spec:
               health:
                 type: string
               macid:
-                type: string
-              name:
                 description: Foo is an example field of Edge. Edit edge_types.go to
-                  remove/update
+                  remove/update Name    string `json:"name,omitempty"`
                 type: string
               usecase:
                 type: string

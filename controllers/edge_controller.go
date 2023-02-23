@@ -28,6 +28,7 @@ import (
 
 	operatorv1 "github.com/difinative/Edge-Operator/api/v1"
 	"github.com/difinative/Edge-Operator/controllers/utility"
+	"github.com/difinative/Edge-Operator/utils"
 )
 
 // EdgeReconciler reconciles a Edge object
@@ -73,6 +74,18 @@ func (r *EdgeReconciler) SetupWithManager(mgr ctrl.Manager) error {
 					edge := de.Object.(*operatorv1.Edge)
 					utility.HandleDeleteEvent(*edge)
 					return false
+				},
+
+				UpdateFunc: func(ue event.UpdateEvent) bool {
+					oldEdge := ue.ObjectOld.(*operatorv1.Edge)
+					newEdge := ue.ObjectNew.(*operatorv1.Edge)
+
+					if !utils.IsStrEqual(oldEdge.Spec.Usecase, newEdge.Spec.Usecase) {
+						utility.UpdateEdgeUc(*newEdge, oldEdge.Spec.Usecase)
+						return false
+					}
+
+					return true
 				},
 			},
 		).
