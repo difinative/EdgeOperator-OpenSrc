@@ -1,6 +1,6 @@
 package v1
 
-type Health struct {
+type HealthVitals struct {
 	UpOrDown       string             `json:"upordown,omitempty"`
 	FreeMemory     string             `json:"freememory,omitempty"`
 	Temperature    int                `json:"temperature,omitempty"`
@@ -23,8 +23,9 @@ type Process struct {
 }
 
 type VitalsToCheck struct {
-	ParamName     string `json:"param_name,omitempty"`
+	ParamName     string `json:"param,omitempty"`
 	Command       string `json:"command,omitempty"`
 	ConfigmapRef  string `json:"configmapref,omitempty"`
+	IsThreshold   bool   `json:"isthreshold,omitempty"`
 	ExpectedValue string `json:"expectation,omitempty"`
 }

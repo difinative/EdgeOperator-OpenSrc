@@ -15,7 +15,14 @@ spec:
     singular: edge
   scope: Namespaced
   versions:
-  - name: v1
+  - additionalPrinterColumns:
+    - jsonPath: .status.healthvitals.upordown
+      name: Up/Down?
+      type: string
+    - jsonPath: .status.health
+      name: Health
+      type: string
+    name: v1
     schema:
       openAPIV3Schema:
         description: Edge is the Schema for the edges API
@@ -51,6 +58,8 @@ spec:
                 description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
                   of cluster Important: Run "make" to regenerate code after modifying
                   this file'
+                type: string
+              healthvitals:
                 properties:
                   freememory:
                     type: string

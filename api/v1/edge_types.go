@@ -30,22 +30,25 @@ type EdgeSpec struct {
 
 	// Foo is an example field of Edge. Edit edge_types.go to remove/update
 	// Name    string `json:"name,omitempty"`
-	MacId   string `json:"macid,omitempty"`
-	Usecase string `json:"usecase,omitempty"`
-	Health  string `json:"health,omitempty"`
+	MacId            string `json:"macid,omitempty"`
+	Usecase          string `json:"usecase,omitempty"`
+	HealthPercentage string `json:"health,omitempty"`
 }
 
 // EdgeStatus defines the observed state of Edge
 type EdgeStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
-	Health         Health            `json:"health,omitempty"`
-	Usecase_Vitals map[string]string `json:"uc_vitals,omitempty"`
+	HealthPercentage string            `json:"health,omitempty"`
+	HealthVitals     HealthVitals      `json:"healthvitals,omitempty"`
+	Usecase_Vitals   map[string]string `json:"uc_vitals,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 
+// +kubebuilder:printcolumn:name="Up/Down?",type="string",JSONPath=`.status.healthvitals.upordown`
+// +kubebuilder:printcolumn:name="Health",type="string",JSONPath=`.status.health`
 // Edge is the Schema for the edges API
 type Edge struct {
 	metav1.TypeMeta   `json:",inline"`

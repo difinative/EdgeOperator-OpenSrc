@@ -48,7 +48,9 @@ spec:
                       type: string
                     expectation:
                       type: string
-                    param_name:
+                    isthreshold:
+                      type: boolean
+                    param:
                       type: string
                   type: object
                 type: array
