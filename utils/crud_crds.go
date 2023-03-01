@@ -64,6 +64,24 @@ func CreateUsecasesCr(dynClient *dynamic.Interface, uc *operatorv1.Usecases) err
 	return err
 }
 
+func DeleteUcs(dynClient *dynamic.Interface, uc *operatorv1.Usecases) error {
+	resource.Resource = "usecases"
+	err := (*dynClient).Resource(resource).Namespace("default").Delete(context.TODO(), uc.Name, v1.DeleteOptions{})
+	return err
+}
+
+func GetListUcs(dynClient *dynamic.Interface) (operatorv1.UsecasesList, error) {
+	resource.Resource = "usecases"
+	ucList := operatorv1.UsecasesList{}
+	uc_obj, err := (*dynClient).Resource(resource).Namespace("default").List(context.TODO(), v1.ListOptions{})
+	if err != nil {
+		ctrl.Log.Info("Error while trying to get usecase", "Error", err)
+		return ucList, err
+	}
+	runtime.DefaultUnstructuredConverter.FromUnstructured(uc_obj.UnstructuredContent(), &ucList)
+	return ucList, err
+}
+
 func DeleteUc_vitals(dynClient *dynamic.Interface, uc *operatorv1.UsecaseVitals) error {
 	resource.Resource = "usecasevitals"
 	err := (*dynClient).Resource(resource).Namespace("default").Delete(context.TODO(), uc.Name, v1.DeleteOptions{})

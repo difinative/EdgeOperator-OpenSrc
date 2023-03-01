@@ -61,17 +61,16 @@ spec:
                 type: string
               healthvitals:
                 properties:
+                  NetworkLatency:
+                    type: string
+                  WifiStrength:
+                    type: string
                   freememory:
                     type: string
                   processes:
-                    additionalProperties:
-                      properties:
-                        error:
-                          type: string
-                        status:
-                          type: string
-                      type: object
-                    type: object
+                    items:
+                      type: string
+                    type: array
                   sqnet:
                     type: string
                   teleportstatus:
@@ -80,6 +79,9 @@ spec:
                     type: integer
                   upordown:
                     type: string
+                required:
+                - NetworkLatency
+                - WifiStrength
                 type: object
               uc_vitals:
                 additionalProperties:

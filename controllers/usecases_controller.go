@@ -64,7 +64,20 @@ func (r *UsecasesReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		For(&operatorv1.Usecases{}).
 		WithEventFilter(
 			predicate.Funcs{
-				CreateFunc: func(ce event.CreateEvent) bool { return false },
+				CreateFunc: func(ce event.CreateEvent) bool {
+					ucs := ce.Object.(*operatorv1.Usecases)
+
+					clt, err := utils.GetDynClt()
+					if err != nil {
+						return false
+					}
+					ucList, err := utils.GetListUcs(&clt)
+					if len(ucList.Items) > 1 {
+						utils.DeleteUcs(&clt, ucs)
+					}
+					return false
+				},
+
 				DeleteFunc: func(ce event.DeleteEvent) bool { return false },
 
 				UpdateFunc: func(ue event.UpdateEvent) bool {
