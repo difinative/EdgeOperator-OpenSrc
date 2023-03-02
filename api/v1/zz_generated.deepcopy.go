@@ -128,9 +128,7 @@ func (in *HealthVitals) DeepCopyInto(out *HealthVitals) {
 	if in.Processes != nil {
 		in, out := &in.Processes, &out.Processes
 		*out = make([]string, len(*in))
-		for key, val := range *in {
-			(*out)[key] = val
-		}
+		copy(*out, *in)
 	}
 }
 
