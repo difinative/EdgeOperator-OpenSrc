@@ -61,7 +61,11 @@ spec:
                 type: string
               healthvitals:
                 properties:
+                  CpuUtilization:
+                    type: string
                   NetworkLatency:
+                    type: string
+                  RamUtilization:
                     type: string
                   WifiStrength:
                     type: string
@@ -79,9 +83,8 @@ spec:
                     type: integer
                   upordown:
                     type: string
-                required:
-                - NetworkLatency
-                - WifiStrength
+                  uptime:
+                    type: integer
                 type: object
               uc_vitals:
                 additionalProperties:
