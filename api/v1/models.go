@@ -7,11 +7,11 @@ type HealthVitals struct {
 	Processes      []string `json:"processes,omitempty"` // To do
 	FreeMemory     int      `json:"freememory,omitempty"`
 	TeleportStatus string   `json:"teleportstatus,omitempty"`
-	Temperature    float64  `json:"temperature,omitempty"`
+	Temperature    int      `json:"temperature,omitempty"`
 	WifiStrength   int      `json:"WifiStrength,omitempty"`
-	NetworkLatency float64  `json:"NetworkLatency,omitempty"`
-	RamUtilization float64  `json:"RamUtilization,omitempty"`
-	CpuUtilization float64  `json:"CpuUtilization,omitempty"`
+	NetworkLatency int      `json:"NetworkLatency,omitempty"`
+	RamUtilization int      `json:"RamUtilization,omitempty"`
+	CpuUtilization int      `json:"CpuUtilization,omitempty"`
 }
 type VitalsToCheck struct {
 	ParamName     string `json:"param,omitempty"`

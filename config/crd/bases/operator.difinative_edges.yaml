@@ -55,22 +55,19 @@ spec:
             description: EdgeStatus defines the observed state of Edge
             properties:
               health:
-                description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
-                  of cluster Important: Run "make" to regenerate code after modifying
-                  this file'
                 type: string
               healthvitals:
                 properties:
                   CpuUtilization:
-                    type: string
+                    type: integer
                   NetworkLatency:
-                    type: string
+                    type: integer
                   RamUtilization:
-                    type: string
+                    type: integer
                   WifiStrength:
-                    type: string
+                    type: integer
                   freememory:
-                    type: string
+                    type: integer
                   processes:
                     items:
                       type: string
@@ -86,6 +83,11 @@ spec:
                   uptime:
                     type: integer
                 type: object
+              lut:
+                description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                  of cluster Important: Run "make" to regenerate code after modifying
+                  this file'
+                type: string
               uc_vitals:
                 additionalProperties:
                   type: string
