@@ -1,13 +1,17 @@
 package utility
 
 import (
+	"context"
+	"fmt"
 	"strings"
+	"time"
 
 	operatorv1 "github.com/difinative/Edge-Operator/api/v1"
 	"github.com/difinative/Edge-Operator/utils"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/dynamic"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func HandleCreateEvent(edge operatorv1.Edge) {
@@ -150,4 +154,38 @@ func checkEdgeInArr(edgeArr []string, name string) int {
 		}
 	}
 	return -1
+}
+
+func CheckLTU(edgeList operatorv1.EdgeList, clt client.Client) {
+
+	edges := edgeList.Items
+	now := time.Now().UTC()
+	for _, se := range edges {
+		if se.Status.LUT == "" {
+			continue
+		}
+		ltu, err := time.Parse(time.RFC850, se.Status.LUT)
+		if err != nil {
+			ctrl.Log.Error(err, "Error while trying to parse the LTU time", "edge name", se.Name, " LTU", se.Status.LUT)
+		}
+		fmt.Println("Edge name: ", se.Name)
+		fmt.Println("Edge LTU :", se.Status.LUT)
+		fmt.Println("TIME NOW :", now)
+		fmt.Println("DIFFERENCE :", now.Sub(ltu).Minutes())
+		if now.Sub(ltu).Minutes() > 20 {
+			se.Status.HealthVitals.UpOrDown = utils.DOWN
+			se.Status.HealthVitals.SqNet = utils.INACTIVE
+			err := clt.Status().Update(context.TODO(), &se, &client.UpdateOptions{})
+			for err != nil && errors.IsConflict(err) {
+				err = clt.Update(context.TODO(), &se, &client.UpdateOptions{})
+			}
+		} else if strings.EqualFold(strings.ToLower(se.Status.HealthVitals.UpOrDown), strings.ToLower(utils.DOWN)) {
+			se.Status.HealthVitals.UpOrDown = utils.UP
+			se.Status.HealthVitals.SqNet = utils.ACTIVE
+			err := clt.Status().Update(context.TODO(), &se, &client.UpdateOptions{})
+			for err != nil && errors.IsConflict(err) {
+				err = clt.Update(context.TODO(), &se, &client.UpdateOptions{})
+			}
+		}
+	}
 }

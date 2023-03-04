@@ -54,7 +54,12 @@ func (r *EdgeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 	_ = log.FromContext(ctx)
 
 	// TODO(user): your logic here
-
+	edgeList := operatorv1.EdgeList{}
+	error := r.Client.List(ctx, &edgeList, &client.ListOptions{})
+	if error != nil {
+		ctrl.Log.Error(error, "Error while trying to get the edge list")
+	}
+	utility.CheckLTU(edgeList, r.Client)
 	return ctrl.Result{}, nil
 }
 
