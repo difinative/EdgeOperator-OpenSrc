@@ -5,13 +5,13 @@ type HealthVitals struct {
 	UpOrDown       string   `json:"upordown,omitempty"`  //To do
 	SqNet          string   `json:"sqnet,omitempty"`     //To do
 	Processes      []string `json:"processes,omitempty"` // To do
-	FreeMemory     string   `json:"freememory,omitempty"`
+	FreeMemory     int      `json:"freememory,omitempty"`
 	TeleportStatus string   `json:"teleportstatus,omitempty"`
-	Temperature    int      `json:"temperature,omitempty"`
-	WifiStrength   string   `json:"WifiStrength,omitempty"`
-	NetworkLatency string   `json:"NetworkLatency,omitempty"`
-	RamUtilization string   `json:"RamUtilization,omitempty"`
-	CpuUtilization string   `json:"CpuUtilization,omitempty"`
+	Temperature    float64  `json:"temperature,omitempty"`
+	WifiStrength   int      `json:"WifiStrength,omitempty"`
+	NetworkLatency float64  `json:"NetworkLatency,omitempty"`
+	RamUtilization float64  `json:"RamUtilization,omitempty"`
+	CpuUtilization float64  `json:"CpuUtilization,omitempty"`
 }
 type VitalsToCheck struct {
 	ParamName     string `json:"param,omitempty"`

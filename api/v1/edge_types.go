@@ -39,6 +39,7 @@ type EdgeSpec struct {
 type EdgeStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+	LUT              string            `json:"lut,omitempty"`
 	HealthPercentage string            `json:"health,omitempty"`
 	HealthVitals     HealthVitals      `json:"healthvitals,omitempty"`
 	Usecase_Vitals   map[string]string `json:"uc_vitals,omitempty"`
