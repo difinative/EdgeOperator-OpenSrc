@@ -196,52 +196,7 @@ func CheckLTU(edgeList operatorv1.EdgeList, clt client.Client) {
 }
 
 func HandleEdgeUpdateEvent(e operatorv1.Edge) {
-	// ctrl.Log.Info("Handling the update event for edge", "name", e.Name)
-	// config, err := ctrl.GetConfig()
-	// if err != nil {
-	// 	ctrl.Log.Info("Error while getting the rest config", "Error", err)
-	// 	return
-	// }
-
-	// clt, err := dynamic.NewForConfig(config)
-	// if err != nil {
-	// 	ctrl.Log.Info("Error while trying to get rest client", "Error", err)
-	// 	return
-	// }
-
-	// hNum := 0
-	// if e.Status.HealthVitals.CpuUtilization == 0 {
-	// 	return
-	// }
-
-	// if e.Status.HealthVitals.FreeMemory != -1 && e.Status.HealthVitals.FreeMemory < 5 {
-	// 	hNum++
-	// }
-	// if e.Status.HealthVitals.TeleportStatus != "" && utils.IsStrEqual(e.Status.HealthVitals.TeleportStatus, utils.INACTIVE) {
-	// 	hNum++
-	// }
-	// if e.Status.HealthVitals.Temperature != -1 && e.Status.HealthVitals.Temperature > 50 {
-	// 	hNum++
-	// }
-	// if e.Status.HealthVitals.WifiStrength != -1 && e.Status.HealthVitals.WifiStrength < -50 {
-	// 	hNum++
-	// }
-	// if e.Status.HealthVitals.NetworkLatency != -1 && e.Status.HealthVitals.NetworkLatency > 100 {
-	// 	hNum++
-	// }
-	// if e.Status.HealthVitals.RamUtilization != -1 && e.Status.HealthVitals.RamUtilization > 90 {
-	// 	hNum++
-	// }
-	// if e.Status.HealthVitals.CpuUtilization != -1 && e.Status.HealthVitals.CpuUtilization > 85 {
-	// 	hNum++
-	// }
-
-	// h := ((hNum / 7) * 100) - 100
-
-	// e.Status.HealthPercentage = strconv.Itoa(h)
-	// err = utils.UpdateEdgeCr(&clt, &e)
-
-	// if err != nil {
-	// 	ctrl.Log.Error(err, "Error while trying to Update Edge resource")
-	// }
+	if e.Status.HealthPercentage < e.Spec.HealthPercentage {
+		ctrl.Log.Info("Following edge health is below expected threshold", "edge", e.Name, "health", e.Status.HealthPercentage)
+	}
 }

@@ -32,7 +32,7 @@ type EdgeSpec struct {
 	// Name    string `json:"name,omitempty"`
 	MacId            string `json:"macid,omitempty"`
 	Usecase          string `json:"usecase,omitempty"`
-	HealthPercentage string `json:"health,omitempty"`
+	HealthPercentage int    `json:"health,omitempty"`
 }
 
 // EdgeStatus defines the observed state of Edge
@@ -40,7 +40,7 @@ type EdgeStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 	LUT              string             `json:"lut,omitempty"`
-	HealthPercentage string             `json:"health,omitempty"`
+	HealthPercentage int                `json:"health,omitempty"`
 	HealthVitals     HealthVitalsStatus `json:"healthvitalsstaus,omitempty"`
 	Usecase_Vitals   map[string]string  `json:"uc_vitals,omitempty"`
 }
