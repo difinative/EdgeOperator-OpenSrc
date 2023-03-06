@@ -22,17 +22,17 @@ type VitalsToCheck struct {
 }
 
 type HealthVitalsStatus struct {
-	Uptime         int         `json:"uptime,omitempty"`
-	UpOrDown       string      `json:"upordown,omitempty"`
-	SqNet          string      `json:"sqnet,omitempty"`
-	Processes      []string    `json:"processes,omitempty"`
-	FreeMemory     StatsInt    `json:"freememory,omitempty"`
-	TeleportStatus StatsString `json:"teleportstatus,omitempty"`
-	Temperature    StatsInt    `json:"temperature,omitempty"`
-	WifiStrength   StatsInt    `json:"WifiStrength,omitempty"`
-	NetworkLatency StatsInt    `json:"NetworkLatency,omitempty"`
-	RamUtilization StatsInt    `json:"RamUtilization,omitempty"`
-	CpuUtilization StatsInt    `json:"CpuUtilization,omitempty"`
+	Uptime         int               `json:"uptime,omitempty"`
+	UpOrDown       string            `json:"upordown,omitempty"`
+	SqNet          string            `json:"sqnet,omitempty"`
+	Processes      map[string]string `json:"processes,omitempty"`
+	FreeMemory     StatsInt          `json:"freememory,omitempty"`
+	TeleportStatus StatsString       `json:"teleportstatus,omitempty"`
+	Temperature    StatsInt          `json:"temperature,omitempty"`
+	WifiStrength   StatsInt          `json:"WifiStrength,omitempty"`
+	NetworkLatency StatsInt          `json:"NetworkLatency,omitempty"`
+	RamUtilization StatsInt          `json:"RamUtilization,omitempty"`
+	CpuUtilization StatsInt          `json:"CpuUtilization,omitempty"`
 }
 
 type StatsInt struct {

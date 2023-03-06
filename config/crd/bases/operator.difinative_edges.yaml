@@ -21,10 +21,10 @@ spec:
       type: string
     - jsonPath: .status.health
       name: Health
-      type: string
-    - jsonPath: .status.uptime
+      type: integer
+    - jsonPath: .status.healthvitalsstaus.uptime
       name: Uptime
-      type: string
+      type: integer
     name: v1
     schema:
       openAPIV3Schema:
@@ -46,7 +46,7 @@ spec:
             description: EdgeSpec defines the desired state of Edge
             properties:
               health:
-                type: string
+                type: integer
               macid:
                 description: Foo is an example field of Edge. Edit edge_types.go to
                   remove/update Name    string `json:"name,omitempty"`
@@ -58,7 +58,7 @@ spec:
             description: EdgeStatus defines the observed state of Edge
             properties:
               health:
-                type: string
+                type: integer
               healthvitalsstaus:
                 properties:
                   CpuUtilization:
@@ -97,9 +97,9 @@ spec:
                         type: integer
                     type: object
                   processes:
-                    items:
+                    additionalProperties:
                       type: string
-                    type: array
+                    type: object
                   sqnet:
                     type: string
                   teleportstatus:

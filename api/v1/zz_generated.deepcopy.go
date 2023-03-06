@@ -147,8 +147,10 @@ func (in *HealthVitalsStatus) DeepCopyInto(out *HealthVitalsStatus) {
 	*out = *in
 	if in.Processes != nil {
 		in, out := &in.Processes, &out.Processes
-		*out = make([]string, len(*in))
-		copy(*out, *in)
+		*out = make(map[string]string, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
 	}
 	out.FreeMemory = in.FreeMemory
 	out.TeleportStatus = in.TeleportStatus
