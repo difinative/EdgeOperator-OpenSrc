@@ -99,3 +99,15 @@ func GetListUc_vitals(dynClient *dynamic.Interface) (operatorv1.UsecaseVitalsLis
 	runtime.DefaultUnstructuredConverter.FromUnstructured(uc_obj.UnstructuredContent(), &ucList)
 	return ucList, err
 }
+
+func UpdateEdgeCr(dynClient *dynamic.Interface, e *operatorv1.Edge) error {
+	resource.Resource = "edges"
+	edge_obj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(e)
+	if err != nil {
+		ctrl.Log.Error(err, "Error while trying to convert the Usecases object to unstructured object")
+		return err
+	}
+	unstruct_obj := unstructured.Unstructured{Object: edge_obj}
+	_, err = (*dynClient).Resource(resource).Namespace("default").Update(context.TODO(), &unstruct_obj, v1.UpdateOptions{})
+	return err
+}

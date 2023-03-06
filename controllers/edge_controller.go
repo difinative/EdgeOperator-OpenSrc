@@ -70,7 +70,7 @@ func (r *EdgeReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		WithEventFilter(
 			predicate.Funcs{
 				CreateFunc: func(ce event.CreateEvent) bool {
-					//Check UC is there
+					//Check UC is there and update the edge sqnet and updown status
 					edge := ce.Object.(*operatorv1.Edge)
 					utility.HandleCreateEvent(*edge)
 					return false
@@ -89,7 +89,7 @@ func (r *EdgeReconciler) SetupWithManager(mgr ctrl.Manager) error {
 						utility.UpdateEdgeUc(*newEdge, oldEdge.Spec.Usecase)
 						return false
 					}
-
+					utility.HandleEdgeUpdateEvent(*newEdge)
 					return true
 				},
 			},
