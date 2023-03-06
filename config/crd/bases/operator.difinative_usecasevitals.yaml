@@ -41,18 +41,16 @@ spec:
                 type: string
               vitals:
                 additionalProperties:
-                  items:
-                    properties:
-                      command:
-                        type: string
-                      configmapref:
-                        type: string
-                      expectation:
-                        type: string
-                      isthreshold:
-                        type: boolean
-                    type: object
-                  type: array
+                  properties:
+                    command:
+                      type: string
+                    configmapref:
+                      type: string
+                    expectation:
+                      type: string
+                    isthreshold:
+                      type: boolean
+                  type: object
                 type: object
             type: object
           status:

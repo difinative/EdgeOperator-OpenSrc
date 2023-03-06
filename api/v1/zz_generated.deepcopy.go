@@ -265,17 +265,9 @@ func (in *UsecaseVitalsSpec) DeepCopyInto(out *UsecaseVitalsSpec) {
 	*out = *in
 	if in.Vitals != nil {
 		in, out := &in.Vitals, &out.Vitals
-		*out = make(map[string][]VitalsToCheck, len(*in))
+		*out = make(map[string]VitalsToCheck, len(*in))
 		for key, val := range *in {
-			var outVal []VitalsToCheck
-			if val == nil {
-				(*out)[key] = nil
-			} else {
-				in, out := &val, &outVal
-				*out = make([]VitalsToCheck, len(*in))
-				copy(*out, *in)
-			}
-			(*out)[key] = outVal
+			(*out)[key] = val
 		}
 	}
 }
