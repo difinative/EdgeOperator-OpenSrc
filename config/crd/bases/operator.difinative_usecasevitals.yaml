@@ -40,20 +40,20 @@ spec:
                   to remove/update
                 type: string
               vitals:
-                items:
-                  properties:
-                    command:
-                      type: string
-                    configmapref:
-                      type: string
-                    expectation:
-                      type: string
-                    isthreshold:
-                      type: boolean
-                    param:
-                      type: string
-                  type: object
-                type: array
+                additionalProperties:
+                  items:
+                    properties:
+                      command:
+                        type: string
+                      configmapref:
+                        type: string
+                      expectation:
+                        type: string
+                      isthreshold:
+                        type: boolean
+                    type: object
+                  type: array
+                type: object
             type: object
           status:
             description: UsecaseVitalsStatus defines the observed state of UsecaseVitals

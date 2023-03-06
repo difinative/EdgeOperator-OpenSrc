@@ -40,8 +40,8 @@ func HandleCreateEvent(edge operatorv1.Edge) {
 		if err != nil {
 			ctrl.Log.Error(err, "Error while trying to create Usecases resource")
 		}
-		edge.Status.HealthVitals.SqNet = utils.ACTIVE
-		edge.Status.HealthVitals.UpOrDown = utils.UP
+		edge.Status.SqNet = utils.ACTIVE
+		edge.Status.UpOrDown = utils.UP
 		err = utils.UpdateEdgeStatusCr(&clt, &edge)
 		if err != nil {
 			ctrl.Log.Error(err, "Error while trying to Update Edge resource")
@@ -73,8 +73,8 @@ func HandleCreateEvent(edge operatorv1.Edge) {
 	if err != nil {
 		ctrl.Log.Error(err, "Error while trying to Update Usecases resource")
 	}
-	edge.Status.HealthVitals.SqNet = utils.ACTIVE
-	edge.Status.HealthVitals.UpOrDown = utils.UP
+	edge.Status.SqNet = utils.ACTIVE
+	edge.Status.UpOrDown = utils.UP
 	err = utils.UpdateEdgeStatusCr(&clt, &edge)
 	if err != nil {
 		ctrl.Log.Error(err, "Error while trying to Update Edge resource")
@@ -186,15 +186,15 @@ func CheckLTU(edgeList operatorv1.EdgeList, clt client.Client) {
 		fmt.Println("TIME NOW :", now)
 		fmt.Println("DIFFERENCE :", now.Sub(ltu).Minutes())
 		if now.Sub(ltu).Minutes() > 20 {
-			se.Status.HealthVitals.UpOrDown = utils.DOWN
-			se.Status.HealthVitals.SqNet = utils.INACTIVE
+			se.Status.UpOrDown = utils.DOWN
+			se.Status.SqNet = utils.INACTIVE
 			err := clt.Status().Update(context.TODO(), &se, &client.UpdateOptions{})
 			for err != nil && errors.IsConflict(err) {
 				err = clt.Update(context.TODO(), &se, &client.UpdateOptions{})
 			}
-		} else if strings.EqualFold(strings.ToLower(se.Status.HealthVitals.UpOrDown), strings.ToLower(utils.DOWN)) {
-			se.Status.HealthVitals.UpOrDown = utils.UP
-			se.Status.HealthVitals.SqNet = utils.ACTIVE
+		} else if strings.EqualFold(strings.ToLower(se.Status.UpOrDown), strings.ToLower(utils.DOWN)) {
+			se.Status.UpOrDown = utils.UP
+			se.Status.SqNet = utils.ACTIVE
 			err := clt.Status().Update(context.TODO(), &se, &client.UpdateOptions{})
 			for err != nil && errors.IsConflict(err) {
 				err = clt.Update(context.TODO(), &se, &client.UpdateOptions{})

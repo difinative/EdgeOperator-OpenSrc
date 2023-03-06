@@ -25,6 +25,9 @@ spec:
     - jsonPath: .status.uptime
       name: Uptime
       type: integer
+    - jsonPath: .status.VitalsStats
+      name: VitalsStats
+      type: integer
     name: v1
     schema:
       openAPIV3Schema:
@@ -57,6 +60,8 @@ spec:
           status:
             description: EdgeStatus defines the observed state of Edge
             properties:
+              VitalsStats:
+                type: integer
               health:
                 type: integer
               healthvitalsstaus:

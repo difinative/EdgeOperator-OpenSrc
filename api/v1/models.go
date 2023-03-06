@@ -14,7 +14,6 @@ type HealthVitals struct {
 	CpuUtilization int      `json:"CpuUtilization,omitempty"`
 }
 type VitalsToCheck struct {
-	ParamName     string `json:"param,omitempty"`
 	Command       string `json:"command,omitempty"`
 	ConfigmapRef  string `json:"configmapref,omitempty"`
 	IsThreshold   bool   `json:"isthreshold,omitempty"`
