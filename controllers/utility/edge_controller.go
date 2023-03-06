@@ -40,6 +40,12 @@ func HandleCreateEvent(edge operatorv1.Edge) {
 		if err != nil {
 			ctrl.Log.Error(err, "Error while trying to create Usecases resource")
 		}
+		edge.Status.HealthVitals.SqNet = utils.ACTIVE
+		edge.Status.HealthVitals.UpOrDown = utils.UP
+		err = utils.UpdateEdgeStatusCr(&clt, &edge)
+		if err != nil {
+			ctrl.Log.Error(err, "Error while trying to Update Edge resource")
+		}
 		return
 	}
 	ctrl.Log.Info("Usecases resource found, Updating the Usecases resource")
@@ -59,6 +65,8 @@ func HandleCreateEvent(edge operatorv1.Edge) {
 		ctrl.Log.Info("Updating usecases resources with Spec", "Usecase", type_, "Edge", edge.Name)
 		if uc.Spec.Usecases != nil {
 			uc.Spec.Usecases[type_] = []string{edge.Name}
+		} else {
+			uc.Spec.Usecases = map[string][]string{type_: {edge.Name}}
 		}
 	}
 	err = utils.UpdateUsecasesCr(&clt, &uc)
@@ -66,8 +74,8 @@ func HandleCreateEvent(edge operatorv1.Edge) {
 		ctrl.Log.Error(err, "Error while trying to Update Usecases resource")
 	}
 	edge.Status.HealthVitals.SqNet = utils.ACTIVE
-	edge.Status.HealthVitals.UpOrDown = utils.DOWN
-	err = utils.UpdateEdgeCr(&clt, &edge)
+	edge.Status.HealthVitals.UpOrDown = utils.UP
+	err = utils.UpdateEdgeStatusCr(&clt, &edge)
 	if err != nil {
 		ctrl.Log.Error(err, "Error while trying to Update Edge resource")
 	}
