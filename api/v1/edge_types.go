@@ -30,32 +30,32 @@ type EdgeSpec struct {
 
 	// Foo is an example field of Edge. Edit edge_types.go to remove/update
 	// Name    string `json:"name,omitempty"`
-	MacId            string `json:"macid,omitempty"`
-	Usecase          string `json:"usecase,omitempty"`
-	HealthPercentage int    `json:"health,omitempty"`
+	MacId            string `json:"MacId,omitempty"`
+	Usecase          string `json:"Usecase,omitempty"`
+	HealthPercentage int    `json:"HealthPercentage,omitempty"`
 }
 
 // EdgeStatus defines the observed state of Edge
 type EdgeStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
-	LUT                   string             `json:"lut,omitempty"`
-	HealthPercentage      int                `json:"health,omitempty"`
-	VitalsStatsPercentage int                `json:"VitalsStats,omitempty"`
-	Uptime                int                `json:"uptime,omitempty"`
-	UpOrDown              string             `json:"upordown,omitempty"`
-	SqNet                 string             `json:"sqnet,omitempty"`
-	HealthVitals          HealthVitalsStatus `json:"healthvitalsstaus,omitempty"`
-	Usecase_Vitals        map[string]string  `json:"uc_vitals,omitempty"`
+	LUT                   string             `json:"Lut,omitempty"`
+	HealthPercentage      int                `json:"HealthPercentage,omitempty"`
+	VitalsStatsPercentage int                `json:"VitalsStatsPercentage,omitempty"`
+	Uptime                int                `json:"Uptime,omitempty"`
+	UpOrDown              string             `json:"UporDown,omitempty"`
+	SqNet                 string             `json:"Sqnet,omitempty"`
+	HealthVitals          HealthVitalsStatus `json:"HealthVitalsStaus,omitempty"`
+	Usecase_Vitals        map[string]string  `json:"Uc_Vitals,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 
-// +kubebuilder:printcolumn:name="Up/Down?",type="string",JSONPath=`.status.upordown`
-// +kubebuilder:printcolumn:name="Health",type="integer",JSONPath=`.status.health`
-// +kubebuilder:printcolumn:name="Uptime",type="integer",JSONPath=`.status.uptime`
-// +kubebuilder:printcolumn:name="VitalsStats",type="integer",JSONPath=`.status.VitalsStats`
+// +kubebuilder:printcolumn:name="Up/Down?",type="string",JSONPath=`.status.UporDown`
+// +kubebuilder:printcolumn:name="HealthPercentage",type="integer",JSONPath=`.status.HealthPercentage`
+// +kubebuilder:printcolumn:name="Uptime",type="integer",JSONPath=`.status.Uptime`
+// +kubebuilder:printcolumn:name="VitalsStatsPercentage",type="integer",JSONPath=`.status.VitalsStatsPercentage`
 // Edge is the Schema for the edges API
 type Edge struct {
 	metav1.TypeMeta   `json:",inline"`

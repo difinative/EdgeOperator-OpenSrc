@@ -35,20 +35,20 @@ spec:
           spec:
             description: UsecaseVitalsSpec defines the desired state of UsecaseVitals
             properties:
-              usecase:
+              Usecase:
                 description: Foo is an example field of UsecaseVitals. Edit usecasevitals_types.go
                   to remove/update
                 type: string
-              vitals:
+              Vitals:
                 additionalProperties:
                   properties:
-                    command:
+                    Command:
                       type: string
-                    configmapref:
+                    ConfigmapRef:
                       type: string
-                    expectation:
+                    ExpectedValue:
                       type: string
-                    isthreshold:
+                    IsThreshold:
                       type: boolean
                   type: object
                 type: object

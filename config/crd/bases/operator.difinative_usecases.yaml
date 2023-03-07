@@ -35,7 +35,7 @@ spec:
           spec:
             description: UsecasesSpec defines the desired state of Usecases
             properties:
-              usecases:
+              Usecases:
                 additionalProperties:
                   items:
                     type: string

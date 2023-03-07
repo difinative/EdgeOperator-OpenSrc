@@ -14,21 +14,21 @@ type HealthVitals struct {
 	CpuUtilization int      `json:"CpuUtilization,omitempty"`
 }
 type VitalsToCheck struct {
-	Command       string `json:"command,omitempty"`
-	ConfigmapRef  string `json:"configmapref,omitempty"`
-	IsThreshold   bool   `json:"isthreshold,omitempty"`
-	ExpectedValue string `json:"expectation,omitempty"`
+	Command       string `json:"Command,omitempty"`
+	ConfigmapRef  string `json:"ConfigmapRef,omitempty"`
+	IsThreshold   bool   `json:"IsThreshold,omitempty"`
+	ExpectedValue string `json:"ExpectedValue,omitempty"`
 }
 
 type HealthVitalsStatus struct {
-	Processes      map[string]string `json:"processes,omitempty"`
-	FreeMemory     StatsInt          `json:"freememory,omitempty"`
-	TeleportStatus StatsString       `json:"teleportstatus,omitempty"`
-	Temperature    StatsInt          `json:"temperature,omitempty"`
-	WifiStrength   StatsInt          `json:"WifiStrength,omitempty"`
-	NetworkLatency StatsInt          `json:"NetworkLatency,omitempty"`
-	RamUtilization StatsInt          `json:"RamUtilization,omitempty"`
-	CpuUtilization StatsInt          `json:"CpuUtilization,omitempty"`
+	Processes      map[string]string `json:"Processes,omitempty"`
+	FreeMemory     StatsInt          `json:"Freememory,omitempty"`
+	TeleportStatus StatsString       `json:"Teleportstatus,omitempty"`
+	Temperature    StatsString       `json:"Temperature,omitempty"`
+	WifiStrength   StatsString       `json:"WifiStrength,omitempty"`
+	NetworkLatency StatsString       `json:"NetworkLatency,omitempty"`
+	RamUtilization StatsString       `json:"RamUtilization,omitempty"`
+	CpuUtilization StatsString       `json:"CpuUtilization,omitempty"`
 }
 
 type StatsInt struct {

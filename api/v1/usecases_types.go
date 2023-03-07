@@ -29,7 +29,7 @@ type UsecasesSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Foo is an example field of Usecases. Edit usecases_types.go to remove/update
-	Usecases map[string][]string `json:"usecases,omitempty"`
+	Usecases map[string][]string `json:"Usecases,omitempty"`
 }
 
 // UsecasesStatus defines the observed state of Usecases

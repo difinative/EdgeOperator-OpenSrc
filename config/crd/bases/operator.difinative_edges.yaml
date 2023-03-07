@@ -16,17 +16,17 @@ spec:
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
-    - jsonPath: .status.upordown
+    - jsonPath: .status.UporDown
       name: Up/Down?
       type: string
-    - jsonPath: .status.health
-      name: Health
+    - jsonPath: .status.HealthPercentage
+      name: HealthPercentage
       type: integer
-    - jsonPath: .status.uptime
+    - jsonPath: .status.Uptime
       name: Uptime
       type: integer
-    - jsonPath: .status.VitalsStats
-      name: VitalsStats
+    - jsonPath: .status.VitalsStatsPercentage
+      name: VitalsStatsPercentage
       type: integer
     name: v1
     schema:
@@ -48,25 +48,30 @@ spec:
           spec:
             description: EdgeSpec defines the desired state of Edge
             properties:
-              health:
+              HealthPercentage:
                 type: integer
-              macid:
+              MacId:
                 description: Foo is an example field of Edge. Edit edge_types.go to
                   remove/update Name    string `json:"name,omitempty"`
                 type: string
-              usecase:
+              Usecase:
                 type: string
             type: object
           status:
             description: EdgeStatus defines the observed state of Edge
             properties:
-              VitalsStats:
+              HealthPercentage:
                 type: integer
-              health:
-                type: integer
-              healthvitalsstaus:
+              HealthVitalsStaus:
                 properties:
                   CpuUtilization:
+                    properties:
+                      reason:
+                        type: string
+                      value:
+                        type: string
+                    type: object
+                  Freememory:
                     properties:
                       reason:
                         type: string
@@ -78,62 +83,57 @@ spec:
                       reason:
                         type: string
                       value:
-                        type: integer
+                        type: string
+                    type: object
+                  Processes:
+                    additionalProperties:
+                      type: string
                     type: object
                   RamUtilization:
                     properties:
                       reason:
                         type: string
                       value:
-                        type: integer
+                        type: string
+                    type: object
+                  Teleportstatus:
+                    properties:
+                      reason:
+                        type: string
+                      value:
+                        type: string
+                    type: object
+                  Temperature:
+                    properties:
+                      reason:
+                        type: string
+                      value:
+                        type: string
                     type: object
                   WifiStrength:
                     properties:
                       reason:
                         type: string
                       value:
-                        type: integer
-                    type: object
-                  freememory:
-                    properties:
-                      reason:
                         type: string
-                      value:
-                        type: integer
-                    type: object
-                  processes:
-                    additionalProperties:
-                      type: string
-                    type: object
-                  teleportstatus:
-                    properties:
-                      reason:
-                        type: string
-                      value:
-                        type: string
-                    type: object
-                  temperature:
-                    properties:
-                      reason:
-                        type: string
-                      value:
-                        type: integer
                     type: object
                 type: object
-              lut:
+              Lut:
                 description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
                   of cluster Important: Run "make" to regenerate code after modifying
                   this file'
                 type: string
-              sqnet:
+              Sqnet:
                 type: string
-              uc_vitals:
+              Uc_Vitals:
                 additionalProperties:
                   type: string
                 type: object
-              upordown:
+              UporDown:
                 type: string
-              uptime:
+              Uptime:
+                type: integer
+              VitalsStatsPercentage:
                 type: integer
             type: object
         type: object
