@@ -22,7 +22,7 @@ type VitalsToCheck struct {
 
 type HealthVitalsStatus struct {
 	Processes      map[string]string `json:"Processes,omitempty"`
-	FreeMemory     StatsInt          `json:"Freememory,omitempty"`
+	FreeMemory     StatsString       `json:"Freememory,omitempty"`
 	TeleportStatus StatsString       `json:"Teleportstatus,omitempty"`
 	Temperature    StatsString       `json:"Temperature,omitempty"`
 	WifiStrength   StatsString       `json:"WifiStrength,omitempty"`
