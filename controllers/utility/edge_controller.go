@@ -3,6 +3,7 @@ package utility
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -204,7 +205,12 @@ func CheckLTU(edgeList operatorv1.EdgeList, clt client.Client) {
 }
 
 func HandleEdgeUpdateEvent(e operatorv1.Edge) {
-	if e.Status.HealthPercentage < e.Spec.HealthPercentage {
+	per, err := strconv.ParseFloat(e.Status.HealthPercentage, 64)
+	if err != nil {
+		ctrl.Log.Error(err, "Error while trying to parse the health percentage")
+		return
+	}
+	if per < float64(e.Spec.HealthPercentage) {
 		ctrl.Log.Info("Following edge health is below expected threshold", "edge", e.Name, "health", e.Status.HealthPercentage)
 	}
 }

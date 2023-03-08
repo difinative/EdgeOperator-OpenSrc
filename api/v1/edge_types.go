@@ -40,8 +40,8 @@ type EdgeStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 	LUT                   string             `json:"Lut,omitempty"`
-	HealthPercentage      int                `json:"HealthPercentage,omitempty"`
-	VitalsStatsPercentage int                `json:"VitalsStatsPercentage,omitempty"`
+	HealthPercentage      string             `json:"HealthPercentage,omitempty"`
+	VitalsStatsPercentage string             `json:"VitalsStatsPercentage,omitempty"`
 	Uptime                int                `json:"Uptime,omitempty"`
 	UpOrDown              string             `json:"UporDown,omitempty"`
 	SqNet                 string             `json:"Sqnet,omitempty"`
