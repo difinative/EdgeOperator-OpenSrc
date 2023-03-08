@@ -30,9 +30,10 @@ type EdgeSpec struct {
 
 	// Foo is an example field of Edge. Edit edge_types.go to remove/update
 	// Name    string `json:"name,omitempty"`
-	MacId            string `json:"MacId,omitempty"`
-	Usecase          string `json:"Usecase,omitempty"`
-	HealthPercentage int    `json:"HealthPercentage,omitempty"`
+	MacId            string   `json:"MacId,omitempty"`
+	Usecase          string   `json:"Usecase,omitempty"`
+	HealthPercentage int      `json:"HealthPercentage,omitempty"`
+	Processes        []string `json:"Processes,omitempty"`
 }
 
 // EdgeStatus defines the observed state of Edge

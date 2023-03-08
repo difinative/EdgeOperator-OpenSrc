@@ -54,6 +54,10 @@ spec:
                 description: Foo is an example field of Edge. Edit edge_types.go to
                   remove/update Name    string `json:"name,omitempty"`
                 type: string
+              Processes:
+                items:
+                  type: string
+                type: array
               Usecase:
                 type: string
             type: object
