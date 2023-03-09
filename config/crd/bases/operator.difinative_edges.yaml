@@ -16,18 +16,21 @@ spec:
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
+    - jsonPath: .spec.Usecase
+      name: Usecase
+      type: string
     - jsonPath: .status.UporDown
       name: Up/Down?
       type: string
     - jsonPath: .status.HealthPercentage
       name: HealthPercentage
-      type: integer
+      type: string
     - jsonPath: .status.Uptime
       name: Uptime
       type: integer
     - jsonPath: .status.VitalsStatsPercentage
       name: VitalsStatsPercentage
-      type: integer
+      type: string
     name: v1
     schema:
       openAPIV3Schema:

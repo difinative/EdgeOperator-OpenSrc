@@ -53,10 +53,11 @@ type EdgeStatus struct {
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 
+// +kubebuilder:printcolumn:name="Usecase",type="string",JSONPath=`.spec.Usecase`
 // +kubebuilder:printcolumn:name="Up/Down?",type="string",JSONPath=`.status.UporDown`
-// +kubebuilder:printcolumn:name="HealthPercentage",type="integer",JSONPath=`.status.HealthPercentage`
+// +kubebuilder:printcolumn:name="HealthPercentage",type="string",JSONPath=`.status.HealthPercentage`
 // +kubebuilder:printcolumn:name="Uptime",type="integer",JSONPath=`.status.Uptime`
-// +kubebuilder:printcolumn:name="VitalsStatsPercentage",type="integer",JSONPath=`.status.VitalsStatsPercentage`
+// +kubebuilder:printcolumn:name="VitalsStatsPercentage",type="string",JSONPath=`.status.VitalsStatsPercentage`
 // Edge is the Schema for the edges API
 type Edge struct {
 	metav1.TypeMeta   `json:",inline"`

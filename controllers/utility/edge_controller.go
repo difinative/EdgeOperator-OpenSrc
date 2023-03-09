@@ -205,6 +205,10 @@ func CheckLTU(edgeList operatorv1.EdgeList, clt client.Client) {
 }
 
 func HandleEdgeUpdateEvent(e operatorv1.Edge) {
+	if e.Status.HealthPercentage == "" {
+		ctrl.Log.Info("Health percentage is empty!!!!!, for following edge", "edge", e.Name)
+		return
+	}
 	per, err := strconv.ParseFloat(e.Status.HealthPercentage, 64)
 	if err != nil {
 		ctrl.Log.Error(err, "Error while trying to parse the health percentage")
