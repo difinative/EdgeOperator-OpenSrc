@@ -18,7 +18,8 @@ func CheckAndDeleteEmptyKeys(clt *dynamic.Interface, ucs *operatorv1.Usecases) e
 		ucList, err := utils.GetListUc_vitals(clt)
 		if err != nil {
 			ctrl.Log.Error(err, "Error while trying to get the list fo usecase")
-			return err
+			delete(ucs.Spec.Usecases, k)
+			continue
 		}
 		for _, u := range ucList.Items {
 			if utils.IsStrEqual(k, u.Spec.Usecase) {

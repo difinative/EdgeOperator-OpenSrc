@@ -5,4 +5,4 @@ kind: Kustomization
 images:
 - name: controller
   newName: difinative/edge-operator
-  newTag: trial
+  newTag: 0.1.0
