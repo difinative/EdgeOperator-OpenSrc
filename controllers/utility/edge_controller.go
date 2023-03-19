@@ -41,8 +41,8 @@ func HandleCreateEvent(edge operatorv1.Edge) {
 		if err != nil {
 			ctrl.Log.Error(err, "Error while trying to create Usecases resource")
 		}
-		edge.Status.SqNet = utils.ACTIVE
-		edge.Status.UpOrDown = utils.UP
+		edge.Status.SqNet = utils.NA
+		edge.Status.UpOrDown = utils.NA
 		err = utils.UpdateEdgeStatusCr(&clt, &edge)
 		if err != nil {
 			ctrl.Log.Error(err, "Error while trying to Update Edge resource")
@@ -74,8 +74,8 @@ func HandleCreateEvent(edge operatorv1.Edge) {
 	if err != nil {
 		ctrl.Log.Error(err, "Error while trying to Update Usecases resource")
 	}
-	edge.Status.SqNet = utils.ACTIVE
-	edge.Status.UpOrDown = utils.UP
+	edge.Status.SqNet = utils.NA
+	edge.Status.UpOrDown = utils.NA
 	err = utils.UpdateEdgeStatusCr(&clt, &edge)
 	if err != nil {
 		ctrl.Log.Error(err, "Error while trying to Update Edge resource")
