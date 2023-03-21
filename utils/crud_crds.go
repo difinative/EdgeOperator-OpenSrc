@@ -106,6 +106,11 @@ func UpdateEdgeStatusCr(dynClient *dynamic.Interface, e *operatorv1.Edge) error 
 		Kind:       "Edge",
 		APIVersion: "operator.difinative/v1",
 	}
+
+	e.ObjectMeta = v1.ObjectMeta{
+		Name:      "edges",
+		Namespace: "default",
+	}
 	edge_obj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(e)
 	if err != nil {
 		ctrl.Log.Error(err, "Error while trying to convert the Usecases object to unstructured object")

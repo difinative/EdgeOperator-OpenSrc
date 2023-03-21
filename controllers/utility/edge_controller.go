@@ -2,6 +2,7 @@ package utility
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -171,7 +172,8 @@ func checkEdgeInArr(edgeArr []string, name string) int {
 }
 
 func CheckLTU(edgeList operatorv1.EdgeList, clt client.Client) {
-
+	eUp := []string{}
+	eDown := []string{}
 	edges := edgeList.Items
 	now := time.Now().UTC()
 	for _, se := range edges {
@@ -186,13 +188,16 @@ func CheckLTU(edgeList operatorv1.EdgeList, clt client.Client) {
 		fmt.Println("Edge LTU :", se.Status.LUT)
 		fmt.Println("TIME NOW :", now)
 		fmt.Println("DIFFERENCE :", now.Sub(ltu).Minutes())
-		if now.Sub(ltu).Minutes() > 20 {
+		if now.Sub(ltu).Minutes() > utils.LUT_TIME {
 			se.Status.UpOrDown = utils.DOWN
 			se.Status.SqNet = utils.INACTIVE
 			err := clt.Status().Update(context.TODO(), &se, &client.UpdateOptions{})
 			for err != nil && errors.IsConflict(err) {
 				err = clt.Update(context.TODO(), &se, &client.UpdateOptions{})
 			}
+			eDown = append(eDown, se.Name)
+			// body := []byte(fmt.Sprintf("Following edge is not been updated for past 20 min, It is down/inactive: %v", se.Name))
+			// utils.Http_(utils.IFTTT_WEBHOOK, "POST", body)
 		} else if strings.EqualFold(strings.ToLower(se.Status.UpOrDown), strings.ToLower(utils.DOWN)) {
 			se.Status.UpOrDown = utils.UP
 			se.Status.SqNet = utils.ACTIVE
@@ -200,8 +205,30 @@ func CheckLTU(edgeList operatorv1.EdgeList, clt client.Client) {
 			for err != nil && errors.IsConflict(err) {
 				err = clt.Update(context.TODO(), &se, &client.UpdateOptions{})
 			}
+			// body := []byte(fmt.Sprintf("Following edge is up and working: %v", se.Name))
+			// utils.Http_(utils.IFTTT_WEBHOOK, "POST", body)
+			eUp = append(eUp, se.Name)
 		}
 	}
+
+	type reqBody struct {
+		Down map[string][]string `json:"Down"`
+		Up   map[string][]string `json:"Up"`
+	}
+
+	r := reqBody{
+		Down: make(map[string][]string),
+		Up:   make(map[string][]string),
+	}
+	r.Down["The following edges are down"] = eDown
+	r.Up["The following edge status updated to UP/active"] = eUp
+
+	body, err := json.Marshal(r)
+	if err != nil {
+		ctrl.Log.Error(err, "Error while trying to marshal struct to json")
+		return
+	}
+	utils.Http_(utils.IFTTT_WEBHOOK, "POST", body)
 }
 
 func HandleEdgeUpdateEvent(e operatorv1.Edge) {
@@ -216,5 +243,7 @@ func HandleEdgeUpdateEvent(e operatorv1.Edge) {
 	}
 	if per < float64(e.Spec.HealthPercentage) {
 		ctrl.Log.Info("Following edge health is below expected threshold", "edge", e.Name, "health", e.Status.HealthPercentage)
+		body := []byte(fmt.Sprint("Following edge health is below expected threshold", "edge", e.Name, "health", e.Status.HealthPercentage))
+		utils.Http_(utils.IFTTT_WEBHOOK, "POST", body)
 	}
 }
