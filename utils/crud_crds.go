@@ -108,8 +108,9 @@ func UpdateEdgeStatusCr(dynClient *dynamic.Interface, e *operatorv1.Edge) error 
 	}
 
 	e.ObjectMeta = v1.ObjectMeta{
-		Name:      "edges",
-		Namespace: "default",
+		Name:            e.GetName(),
+		Namespace:       "default",
+		ResourceVersion: e.GetObjectMeta().GetResourceVersion(),
 	}
 	edge_obj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(e)
 	if err != nil {
