@@ -189,13 +189,15 @@ func CheckLTU(edgeList operatorv1.EdgeList, clt client.Client) {
 		fmt.Println("TIME NOW :", now)
 		fmt.Println("DIFFERENCE :", now.Sub(ltu).Minutes())
 		if now.Sub(ltu).Minutes() > utils.LUT_TIME {
-			se.Status.UpOrDown = utils.DOWN
-			se.Status.SqNet = utils.INACTIVE
-			err := clt.Status().Update(context.TODO(), &se, &client.UpdateOptions{})
-			for err != nil && errors.IsConflict(err) {
-				err = clt.Update(context.TODO(), &se, &client.UpdateOptions{})
+			if !utils.IsStrEqual(se.Status.UpOrDown, utils.DOWN) {
+				se.Status.UpOrDown = utils.DOWN
+				se.Status.SqNet = utils.INACTIVE
+				err := clt.Status().Update(context.TODO(), &se, &client.UpdateOptions{})
+				for err != nil && errors.IsConflict(err) {
+					err = clt.Update(context.TODO(), &se, &client.UpdateOptions{})
+				}
+				eDown = append(eDown, se.Name)
 			}
-			eDown = append(eDown, se.Name)
 			// body := []byte(fmt.Sprintf("Following edge is not been updated for past 20 min, It is down/inactive: %v", se.Name))
 			// utils.Http_(utils.IFTTT_WEBHOOK, "POST", body)
 		} else if strings.EqualFold(strings.ToLower(se.Status.UpOrDown), strings.ToLower(utils.DOWN)) {
