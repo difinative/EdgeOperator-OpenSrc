@@ -14,7 +14,7 @@ func IsArrEmpty(arr []string) bool {
 	return len(arr) == 0
 }
 
-func generate(n int) string {
+func Generate(n int) string {
 	var chars = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321")
 	str := make([]rune, n)
 	for i := range str {

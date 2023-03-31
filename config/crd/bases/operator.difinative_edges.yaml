@@ -16,20 +16,20 @@ spec:
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
-    - jsonPath: .spec.Usecase
+    - jsonPath: .spec.usecase
       name: Usecase
       type: string
-    - jsonPath: .status.UporDown
+    - jsonPath: .status.up/down
       name: Up/Down?
       type: string
-    - jsonPath: .status.HealthPercentage
+    - jsonPath: .status.healthPercentage
       name: HealthPercentage
       type: string
-    - jsonPath: .status.Uptime
+    - jsonPath: .status.uptime
       name: Uptime
       type: integer
-    - jsonPath: .status.VitalsStatsPercentage
-      name: VitalsStatsPercentage
+    - jsonPath: .status.vitalsPercentage
+      name: VitalsPercentage
       type: string
     name: v1
     schema:
@@ -51,25 +51,30 @@ spec:
           spec:
             description: EdgeSpec defines the desired state of Edge
             properties:
-              HealthPercentage:
+              healthPercentage:
                 type: integer
-              MacId:
+              macId:
                 description: Foo is an example field of Edge. Edit edge_types.go to
                   remove/update Name    string `json:"name,omitempty"`
                 type: string
-              Processes:
+              processes:
                 items:
                   type: string
                 type: array
-              Usecase:
+              usecase:
                 type: string
             type: object
           status:
             description: EdgeStatus defines the observed state of Edge
             properties:
-              HealthPercentage:
+              LUT:
+                description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                  of cluster Important: Run "make" to regenerate code after modifying
+                  this file'
                 type: string
-              HealthVitalsStaus:
+              healthPercentage:
+                type: string
+              healthVitals:
                 properties:
                   CpuUtilization:
                     properties:
@@ -125,22 +130,17 @@ spec:
                         type: string
                     type: object
                 type: object
-              Lut:
-                description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
-                  of cluster Important: Run "make" to regenerate code after modifying
-                  this file'
+              sqnet:
                 type: string
-              Sqnet:
+              up/down:
                 type: string
-              Uc_Vitals:
+              uptime:
+                type: integer
+              usecaseVitals:
                 additionalProperties:
                   type: string
                 type: object
-              UporDown:
-                type: string
-              Uptime:
-                type: integer
-              VitalsStatsPercentage:
+              vitalsPercentage:
                 type: string
             type: object
         type: object

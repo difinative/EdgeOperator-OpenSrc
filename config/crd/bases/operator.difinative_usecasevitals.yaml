@@ -44,11 +44,11 @@ spec:
                   properties:
                     Command:
                       type: string
-                    ConfigmapRef:
+                    configmapRef:
                       type: string
-                    ExpectedValue:
+                    expectedValue:
                       type: string
-                    IsThreshold:
+                    isThreshold:
                       type: boolean
                   type: object
                 type: object
