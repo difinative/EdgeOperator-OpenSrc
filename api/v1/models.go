@@ -15,9 +15,9 @@ type HealthVitals struct {
 }
 type VitalsToCheck struct {
 	Command       string `json:"Command,omitempty"`
-	ConfigmapRef  string `json:"ConfigmapRef,omitempty"`
-	IsThreshold   bool   `json:"IsThreshold,omitempty"`
-	ExpectedValue string `json:"ExpectedValue,omitempty"`
+	ConfigmapRef  string `json:"configmapRef,omitempty"`
+	IsThreshold   bool   `json:"isThreshold,omitempty"`
+	ExpectedValue string `json:"expectedValue,omitempty"`
 }
 
 type HealthVitalsStatus struct {

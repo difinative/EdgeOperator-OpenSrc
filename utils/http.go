@@ -7,13 +7,15 @@ import (
 	"net/http"
 )
 
-func Http_(api string, req_type string, body []byte) error {
+func Http_(api string, req_type string, body []byte, headerKeyValue map[string]string) error {
 	r, err := http.NewRequest(req_type, api, bytes.NewBuffer(body))
 	if err != nil {
 		log.Println("Error while trying to create the requets")
 		return err
 	}
-
+	for k, v := range headerKeyValue {
+		r.Header.Add(k, v)
+	}
 	r.Header.Add("Content-Type", "application/json")
 
 	clt := &http.Client{}
