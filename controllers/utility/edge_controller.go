@@ -200,7 +200,7 @@ func CheckLTU(edgeList operatorv1.EdgeList, clt client.Client) {
 					err = clt.Update(context.TODO(), &se, &client.UpdateOptions{})
 				}
 				eDown = append(eDown, se.Name)
-				go LogIncident("DOWN", se.Name)
+				go LogIncident(fmt.Sprintf("Following edge is 'DOWN': %s", se.Name), se.Name)
 			}
 			// body := []byte(fmt.Sprintf("Following edge is not been updated for past 20 min, It is down/inactive: %v", se.Name))
 			// utils.Http_(utils.IFTTT_WEBHOOK, "POST", body)
@@ -254,15 +254,16 @@ func HandleEdgeUpdateEvent(e operatorv1.Edge) {
 		ctrl.Log.Info("Following edge health is below expected threshold", "edge", e.Name, "health", e.Status.HealthPercentage)
 		body := []byte(fmt.Sprint("Following edge health is below expected threshold", "edge", e.Name, "health", e.Status.HealthPercentage))
 		utils.Http_(utils.IFTTT_WEBHOOK, "POST", body, nil)
+		go LogIncident(fmt.Sprint("Following edge health is below expected threshold", "edge", e.Name, "health", e.Status.HealthPercentage), e.Name)
 	}
 }
 
-func LogIncident(upOrDown, edge string) {
-	no := utils.Generate(6)
+func LogIncident(msg, edge string) {
+	no := "INC_" + edge + "_" + utils.GenerateRandomAlphaNum(6)
 	incidentLogBody := utils.IncidentDbBody{
 		IncidentNo:   no,
-		Title:        "UP/Down",
-		Description:  fmt.Sprintf("Following edge:%s is %s", edge, upOrDown),
+		Title:        "Edge Status",
+		Description:  msg,
 		Category:     "Edge Operator",
 		SeverityType: "CRITICAL",
 		IncidenType:  "ASSET",
