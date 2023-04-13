@@ -24,3 +24,8 @@ func GenerateRandomAlphaNum(n int) string {
 
 	return string(str) + strconv.Itoa(x)
 }
+
+func GenerateRandomNum(n int) string {
+	x := rand.Intn(n)
+	return strconv.Itoa(x)
+}

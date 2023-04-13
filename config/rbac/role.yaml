@@ -57,3 +57,19 @@ rules:
   - get
   - patch
   - update
+- apiGroups:
+  - operator.difinative
+  resources:
+  - usecasevitals
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["update", "get"]
+
