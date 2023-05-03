@@ -6,7 +6,7 @@ type WebHookReqBody struct {
 }
 
 type IncidentDbBody struct {
-	IncidentNo   string `json:"incident_no"`
+	// IncidentNo   string `json:"incident_no"`
 	Title        string `json:"title"`
 	Description  string `json:"description"`
 	Category     string `json:"category"`
