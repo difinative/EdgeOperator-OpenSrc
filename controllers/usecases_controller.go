@@ -87,10 +87,10 @@ func (r *UsecasesReconciler) SetupWithManager(mgr ctrl.Manager) error {
 						return false
 					}
 
-					err = utility.CheckAndDeleteEmptyKeys(&clt, ucs)
-					if err != nil {
-						return false
-					}
+					utility.CheckAndDeleteEmptyKeys(&clt, ucs)
+					// if err != nil {
+					// 	return false
+					// }
 					return true
 				},
 			},

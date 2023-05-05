@@ -8,7 +8,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
-func CheckAndDeleteEmptyKeys(clt *dynamic.Interface, ucs *operatorv1.Usecases) error {
+func CheckAndDeleteEmptyKeys(clt *dynamic.Interface, ucs *operatorv1.Usecases) {
 	for k, v := range ucs.Spec.Usecases {
 		if !utils.IsArrEmpty(v) {
 			continue
@@ -40,9 +40,14 @@ func CheckAndDeleteEmptyKeys(clt *dynamic.Interface, ucs *operatorv1.Usecases) e
 		Kind:       "Usecases",
 		APIVersion: "operator.difinative/v1",
 	}
-	err := utils.UpdateUsecasesCr(clt, ucs)
-	if err != nil {
-		ctrl.Log.Error(err, "Error while trying to update the usecases resource")
+
+	for i := 0; i < 10; i++ {
+		err := utils.UpdateUsecasesCr(clt, ucs)
+		if err != nil {
+			ctrl.Log.Error(err, "Error while trying to update the usecases resource")
+		} else {
+			break
+		}
 	}
-	return err
+
 }

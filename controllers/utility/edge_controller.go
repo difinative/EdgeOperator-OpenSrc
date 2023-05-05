@@ -44,9 +44,14 @@ func HandleCreateEvent(edge operatorv1.Edge) {
 		}
 		edge.Status.SqNet = utils.NA
 		edge.Status.UpOrDown = utils.NA
-		err = utils.UpdateEdgeStatusCr(&clt, &edge)
-		if err != nil {
-			ctrl.Log.Error(err, "Error while trying to Update Edge resource")
+
+		for i := 0; i < 10; i++ {
+			err = utils.UpdateEdgeStatusCr(&clt, &edge)
+			if err != nil {
+				ctrl.Log.Error(err, "Error while trying to Update Edge resource")
+			} else {
+				break
+			}
 		}
 		return
 	}
@@ -71,16 +76,28 @@ func HandleCreateEvent(edge operatorv1.Edge) {
 			uc.Spec.Usecases = map[string][]string{type_: {edge.Name}}
 		}
 	}
-	err = utils.UpdateUsecasesCr(&clt, &uc)
-	if err != nil {
-		ctrl.Log.Error(err, "Error while trying to Update Usecases resource")
+
+	for i := 0; i < 10; i++ {
+		err = utils.UpdateUsecasesCr(&clt, &uc)
+		if err != nil {
+			ctrl.Log.Error(err, "Error while trying to Update Usecases resource")
+		} else {
+			break
+		}
 	}
+
 	edge.Status.SqNet = utils.NA
 	edge.Status.UpOrDown = utils.NA
-	err = utils.UpdateEdgeStatusCr(&clt, &edge)
-	if err != nil {
-		ctrl.Log.Error(err, "Error while trying to Update Edge resource")
+
+	for i := 0; i < 10; i++ {
+		err = utils.UpdateEdgeStatusCr(&clt, &edge)
+		if err != nil {
+			ctrl.Log.Error(err, "Error while trying to Update Edge resource")
+		} else {
+			break
+		}
 	}
+
 }
 
 func HandleDeleteEvent(edge operatorv1.Edge) {
@@ -111,10 +128,16 @@ func HandleDeleteEvent(edge operatorv1.Edge) {
 	if i != -1 {
 		edgeArr = append(edgeArr[:i], edgeArr[i+1:]...)
 		uc.Spec.Usecases[type_] = edgeArr
-		err = utils.UpdateUsecasesCr(&clt, &uc)
-		if err != nil {
-			ctrl.Log.Error(err, "Error while trying to update the usecases resource")
+
+		for i := 0; i < 10; i++ {
+			err = utils.UpdateUsecasesCr(&clt, &uc)
+			if err != nil {
+				ctrl.Log.Error(err, "Error while trying to update the usecases resource")
+			} else {
+				break
+			}
 		}
+
 	}
 }
 
@@ -157,8 +180,13 @@ func UpdateEdgeUc(e operatorv1.Edge, prevUc string) {
 	}
 	uc.Spec.Usecases[prevUc] = prevEdgeArr
 
-	utils.UpdateUsecasesCr(&clt, &uc)
-
+	for i := 0; i < 10; i++ {
+		err = utils.UpdateUsecasesCr(&clt, &uc)
+		if err == nil {
+			break
+		}
+		fmt.Println("Error while trying to update the usecases resources")
+	}
 }
 
 func checkEdgeInArr(edgeArr []string, name string) int {
@@ -201,8 +229,6 @@ func CheckLTU(edgeList operatorv1.EdgeList, clt client.Client) {
 				}
 				eDown = append(eDown, se.Name)
 			}
-			// body := []byte(fmt.Sprintf("Following edge is not been updated for past 20 min, It is down/inactive: %v", se.Name))
-			// utils.Http_(utils.IFTTT_WEBHOOK, "POST", body)
 		} else if strings.EqualFold(strings.ToLower(se.Status.UpOrDown), strings.ToLower(utils.DOWN)) {
 			se.Status.UpOrDown = utils.UP
 			se.Status.SqNet = utils.ACTIVE
@@ -210,20 +236,13 @@ func CheckLTU(edgeList operatorv1.EdgeList, clt client.Client) {
 			for err != nil && errors.IsConflict(err) {
 				err = clt.Update(context.TODO(), &se, &client.UpdateOptions{})
 			}
-			// body := []byte(fmt.Sprintf("Following edge is up and working: %v", se.Name))
-			// utils.Http_(utils.IFTTT_WEBHOOK, "POST", body)
 			eUp = append(eUp, se.Name)
-			// go LogIncident(fmt.Sprintf("Following edge is 'UP' now: %s", se.Name), se.Name)
 		}
 	}
 
 	if len(eDown) <= 0 && len(eUp) <= 0 {
 		return
 	}
-	// type reqBody struct {
-	// 	Down map[string][]string `json:"Down"`
-	// 	Up   map[string][]string `json:"Up"`
-	// }
 
 	r := utils.WebHookReqBody{
 		Down: make(map[string][]string),
@@ -237,14 +256,13 @@ func CheckLTU(edgeList operatorv1.EdgeList, clt client.Client) {
 		ctrl.Log.Error(err, "Error while trying to marshal struct to json")
 		return
 	}
-	utils.Http_(utils.IFTTT_WEBHOOK, "POST", body, nil)
+	go utils.Http_(utils.IFTTT_WEBHOOK, "POST", body, nil)
 
 	EdgeUp.Set(float64(len(eUp)))
 	EdgeDown.Set(float64(len(eDown)))
 
-	for _, v := range eDown {
-		go LogIncident(fmt.Sprintf("Following edge is 'DOWN': %s", v), v)
-
+	if len(eDown) > 0 {
+		go LogIncident(fmt.Sprintf("Following edges are 'DOWN': %s", eDown), "Edges are Down")
 	}
 
 }
@@ -262,16 +280,14 @@ func HandleEdgeUpdateEvent(e operatorv1.Edge) {
 	if per < float64(e.Spec.HealthPercentage) {
 		ctrl.Log.Info("Following edge health is below expected threshold", "edge", e.Name, "health", e.Status.HealthPercentage)
 		body := []byte(fmt.Sprint("Following edge health is below expected threshold", "edge", e.Name, "health", e.Status.HealthPercentage))
-		utils.Http_(utils.IFTTT_WEBHOOK, "POST", body, nil)
-		go LogIncident(fmt.Sprint("Following edge health is below expected threshold", "edge", e.Name, "health", e.Status.HealthPercentage), e.Name)
+		go utils.Http_(utils.IFTTT_WEBHOOK, "POST", body, nil)
+		go LogIncident(fmt.Sprint("Following edge health is below expected threshold", "edge", e.Name, "health", e.Status.HealthPercentage), fmt.Sprintf("HP: ", e.Name))
 	}
 }
 
-func LogIncident(msg, edge string) {
-	// no := "INC_" + utils.GenerateRandomNum(6)
+func LogIncident(msg, title string) {
 	incidentLogBody := utils.IncidentDbBody{
-		// IncidentNo:   no,
-		Title:        "Edge: " + edge + " Status",
+		Title:        title,
 		Description:  msg,
 		Category:     "squirrel.assets.edge.down",
 		SeverityType: "CRITICAL",
