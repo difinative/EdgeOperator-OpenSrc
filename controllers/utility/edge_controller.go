@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	operatorv1 "github.com/difinative/Edge-Operator/api/v1"
@@ -243,7 +244,7 @@ func CheckLTU(edgeList operatorv1.EdgeList, clt client.Client) {
 	if len(eDown) <= 0 && len(eUp) <= 0 {
 		return
 	}
-
+	var wg sync.WaitGroup
 	r := utils.WebHookReqBody{
 		Down: make(map[string][]string),
 		Up:   make(map[string][]string),
@@ -256,18 +257,21 @@ func CheckLTU(edgeList operatorv1.EdgeList, clt client.Client) {
 		ctrl.Log.Error(err, "Error while trying to marshal struct to json")
 		return
 	}
-	go utils.Http_(utils.IFTTT_WEBHOOK, "POST", body, nil)
+	wg.Add(1)
+	go utils.Http_(utils.IFTTT_WEBHOOK, "POST", body, nil, &wg)
 
 	EdgeUp.Set(float64(len(eUp)))
 	EdgeDown.Set(float64(len(eDown)))
 
 	if len(eDown) > 0 {
-		go LogIncident(fmt.Sprintf("Following edges are 'DOWN': %s", eDown), "Edges are Down")
+		wg.Add(1)
+		go LogIncident(fmt.Sprintf("Following edges are 'DOWN': %s", eDown), "Edges are Down", &wg)
 	}
 
 }
 
 func HandleEdgeUpdateEvent(e operatorv1.Edge) {
+
 	if e.Status.HealthPercentage == "" {
 		ctrl.Log.Info("Health percentage is empty!!!!!, for following edge", "edge", e.Name)
 		return
@@ -278,14 +282,18 @@ func HandleEdgeUpdateEvent(e operatorv1.Edge) {
 		return
 	}
 	if per < float64(e.Spec.HealthPercentage) {
+		var wg sync.WaitGroup
+
 		ctrl.Log.Info("Following edge health is below expected threshold", "edge", e.Name, "health", e.Status.HealthPercentage)
 		body := []byte(fmt.Sprint("Following edge health is below expected threshold", "edge", e.Name, "health", e.Status.HealthPercentage))
-		go utils.Http_(utils.IFTTT_WEBHOOK, "POST", body, nil)
-		go LogIncident(fmt.Sprint("Following edge health is below expected threshold", "edge", e.Name, "health", e.Status.HealthPercentage), fmt.Sprintf("HP: ", e.Name))
+		wg.Add(1)
+		go utils.Http_(utils.IFTTT_WEBHOOK, "POST", body, nil, &wg)
+		wg.Add(1)
+		go LogIncident(fmt.Sprint("Following edge health is below expected threshold", "edge", e.Name, "health", e.Status.HealthPercentage), fmt.Sprint("HP: ", e.Name), &wg)
 	}
 }
 
-func LogIncident(msg, title string) {
+func LogIncident(msg, title string, wg *sync.WaitGroup) {
 	incidentLogBody := utils.IncidentDbBody{
 		Title:        title,
 		Description:  msg,
@@ -302,5 +310,6 @@ func LogIncident(msg, title string) {
 		ctrl.Log.Error(err, "Error while trying to marshal struct to json")
 		return
 	}
-	utils.Http_(utils.INCIDENT_LOG_API, "POST", body, map[string]string{"Authorization": utils.BEARER_TOKEN})
+	utils.Http_(utils.INCIDENT_LOG_API, "POST", body, map[string]string{"Authorization": utils.BEARER_TOKEN}, nil)
+	wg.Done()
 }

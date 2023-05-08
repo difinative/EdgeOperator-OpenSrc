@@ -5,9 +5,10 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"sync"
 )
 
-func Http_(api string, req_type string, body []byte, headerKeyValue map[string]string) error {
+func Http_(api string, req_type string, body []byte, headerKeyValue map[string]string, wg *sync.WaitGroup) error {
 	r, err := http.NewRequest(req_type, api, bytes.NewBuffer(body))
 	if err != nil {
 		log.Println("Error while trying to create the requets")
@@ -35,6 +36,8 @@ func Http_(api string, req_type string, body []byte, headerKeyValue map[string]s
 
 	log.Println("Request successfully completed")
 	log.Println("Response: ", string(rByte))
-
+	if wg != nil {
+		wg.Done()
+	}
 	return nil
 }
