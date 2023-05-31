@@ -9,6 +9,7 @@ import (
 )
 
 func Http_(api string, req_type string, body []byte, headerKeyValue map[string]string, wg *sync.WaitGroup) error {
+	log.Print("Making api req to url: ", api)
 	r, err := http.NewRequest(req_type, api, bytes.NewBuffer(body))
 	if err != nil {
 		log.Println("Error while trying to create the requets")
@@ -19,6 +20,7 @@ func Http_(api string, req_type string, body []byte, headerKeyValue map[string]s
 	}
 	r.Header.Add("Content-Type", "application/json")
 
+	log.Println("Performing the request")
 	clt := &http.Client{}
 	res, err := clt.Do(r)
 
@@ -36,6 +38,7 @@ func Http_(api string, req_type string, body []byte, headerKeyValue map[string]s
 
 	log.Println("Request successfully completed")
 	log.Println("Response: ", string(rByte))
+	log.Println("Response status: ", res.Status)
 	if wg != nil {
 		wg.Done()
 	}

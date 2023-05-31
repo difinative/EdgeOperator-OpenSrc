@@ -18,22 +18,25 @@ import (
 )
 
 func HandleCreateEvent(edge operatorv1.Edge) {
+
+	ctrl.Log.Info(">>>>>>>> Handle create event called")
+	type_ := edge.Spec.Usecase
+
 	config, err := ctrl.GetConfig()
 	if err != nil {
-		ctrl.Log.Info("Error while getting the rest config", "Error", err)
+		ctrl.Log.Error(err, "!!!!! Error while getting the rest config !!!!!")
 		return
 	}
-	// edge := ce.Object.(*operatorv1.Edge)
-	type_ := edge.Spec.Usecase
+
 	clt, err := dynamic.NewForConfig(config)
 	if err != nil {
-		ctrl.Log.Info("Error while trying to get rest client", "Error", err)
+		ctrl.Log.Error(err, "!!!!! Error while trying to get rest client !!!!!")
 		return
 	}
 
 	uc, err := utils.GetUsescasesCr(&clt)
 	if err != nil && errors.IsNotFound(err) {
-		ctrl.Log.Info("No Usecases resource found, creating new resource")
+		ctrl.Log.Info(">>>>No Usecases resource found, creating new resource<<<<")
 		uc := operatorv1.Usecases{}
 		uc.Spec.Usecases = make(map[string][]string)
 		ctrl.Log.Info("Creating usecases resources with Spec", "Usecase", type_, "Edge", edge.Name)
@@ -41,7 +44,7 @@ func HandleCreateEvent(edge operatorv1.Edge) {
 		uc.Spec.Usecases[type_] = []string{edge.Name}
 		err := utils.CreateUsecasesCr(&clt, &uc)
 		if err != nil {
-			ctrl.Log.Error(err, "Error while trying to create Usecases resource")
+			ctrl.Log.Error(err, "!!!!! Error while trying to create Usecases resource !!!!!")
 		}
 		edge.Status.SqNet = utils.NA
 		edge.Status.UpOrDown = utils.NA
@@ -49,27 +52,28 @@ func HandleCreateEvent(edge operatorv1.Edge) {
 		for i := 0; i < 10; i++ {
 			err = utils.UpdateEdgeStatusCr(&clt, &edge)
 			if err != nil {
-				ctrl.Log.Error(err, "Error while trying to Update Edge resource")
+				ctrl.Log.Error(err, "!!!!! Error while trying to Update Edge resource !!!!!")
 			} else {
 				break
 			}
 		}
 		return
 	}
-	ctrl.Log.Info("Usecases resource found, Updating the Usecases resource")
+
+	ctrl.Log.Info(">>>> Usecases resource found, Updating the Usecases resource <<<<")
 	ctrl.Log.Info("Checking the following usecase is there or not", "Usecase", type_)
 
 	nameArr, isPresent := uc.Spec.Usecases[type_]
 	if isPresent {
 		i := checkEdgeInArr(nameArr, edge.Name)
 		if i == -1 {
-			ctrl.Log.Info("Usecase found in the resource")
+			ctrl.Log.Info(">>>> Usecase found in the resource <<<<")
 			ctrl.Log.Info("Updating usecases resources with Spec", "Usecase", type_, "Edge", edge.Name)
 
 			uc.Spec.Usecases[type_] = append(nameArr, edge.Name)
 		}
 	} else {
-		ctrl.Log.Info("Usecase not found in the resource")
+		ctrl.Log.Info(">>>> Usecase not found in the resource <<<<")
 		ctrl.Log.Info("Updating usecases resources with Spec", "Usecase", type_, "Edge", edge.Name)
 		if uc.Spec.Usecases != nil {
 			uc.Spec.Usecases[type_] = []string{edge.Name}
@@ -81,7 +85,7 @@ func HandleCreateEvent(edge operatorv1.Edge) {
 	for i := 0; i < 10; i++ {
 		err = utils.UpdateUsecasesCr(&clt, &uc)
 		if err != nil {
-			ctrl.Log.Error(err, "Error while trying to Update Usecases resource")
+			ctrl.Log.Error(err, "!!!!! Error while trying to Update Usecases resource !!!!!")
 		} else {
 			break
 		}
@@ -102,29 +106,31 @@ func HandleCreateEvent(edge operatorv1.Edge) {
 }
 
 func HandleDeleteEvent(edge operatorv1.Edge) {
-	ctrl.Log.Info("Deleting the following edge", "name", edge.Name)
+	ctrl.Log.Info(">>>>>>>> Handle delete event called")
+	name := edge.Name
+	type_ := edge.Spec.Usecase
+
+	ctrl.Log.Info("!!! Deleting the following edge", "name", edge.Name)
 	config, err := ctrl.GetConfig()
 	if err != nil {
-		ctrl.Log.Info("Error while getting the rest config", "Error", err)
+		ctrl.Log.Error(err, "!!!! Error while getting the rest config !!!!")
 		return
 	}
-	// edge := ce.Object.(*operatorv1.Edge)
-	name := edge.Name
 
-	type_ := edge.Spec.Usecase
 	clt, err := dynamic.NewForConfig(config)
 	if err != nil {
-		ctrl.Log.Info("Error while trying to get rest client", "Error", err)
+		ctrl.Log.Error(err, "!!!! Error while trying to get rest client !!!!")
 		return
 	}
+
 	ctrl.Log.Info("Getting usecases resource")
 	uc, err := utils.GetUsescasesCr(&clt)
 	if err != nil {
-		ctrl.Log.Error(err, "Error while trying to get the Usecases")
+		ctrl.Log.Error(err, "!!!! Error while trying to get the Usecases !!!!")
 		return
 	}
 	edgeArr := uc.Spec.Usecases[type_]
-	ctrl.Log.Info("Iterating over the array of edge")
+	ctrl.Log.Info("Iterating over the array of edge ...")
 	i := checkEdgeInArr(edgeArr, name)
 	if i != -1 {
 		edgeArr = append(edgeArr[:i], edgeArr[i+1:]...)
@@ -133,7 +139,7 @@ func HandleDeleteEvent(edge operatorv1.Edge) {
 		for i := 0; i < 10; i++ {
 			err = utils.UpdateUsecasesCr(&clt, &uc)
 			if err != nil {
-				ctrl.Log.Error(err, "Error while trying to update the usecases resource")
+				ctrl.Log.Error(err, "!!!! Error while trying to update the usecases resource !!!!")
 			} else {
 				break
 			}
@@ -143,37 +149,45 @@ func HandleDeleteEvent(edge operatorv1.Edge) {
 }
 
 func UpdateEdgeUc(e operatorv1.Edge, prevUc string) {
-	ctrl.Log.Info("Handling the update event for edge", "name", e.Name)
-	config, err := ctrl.GetConfig()
-	if err != nil {
-		ctrl.Log.Info("Error while getting the rest config", "Error", err)
-		return
-	}
+
+	ctrl.Log.Info(">>>> Handling the 'USECASE' update event for edge", "name", e.Name)
 	name := e.Name
 	type_ := e.Spec.Usecase
 
-	clt, err := dynamic.NewForConfig(config)
+	config, err := ctrl.GetConfig()
 	if err != nil {
-		ctrl.Log.Info("Error while trying to get rest client", "Error", err)
+		ctrl.Log.Error(err, "!!!! Error while getting the rest config !!!!")
 		return
 	}
 
-	ctrl.Log.Info("Getting usecases resource")
+	clt, err := dynamic.NewForConfig(config)
+	if err != nil {
+		ctrl.Log.Error(err, "Error while trying to get rest client")
+		return
+	}
+
+	ctrl.Log.Info(">>> Getting usecases resource <<<")
 	uc, err := utils.GetUsescasesCr(&clt)
 	if err != nil {
-		ctrl.Log.Error(err, "Error while trying to get the Usecases")
+		ctrl.Log.Error(err, "!!!! Error while trying to get the Usecases !!!!")
 		return
 	}
 
 	edgeArr, isPresent := uc.Spec.Usecases[type_]
+	ctrl.Log.Info("Checking if the new usecase is present in usecase resource")
 	if isPresent {
+		ctrl.Log.Info("Usecase found")
+		ctrl.Log.Info("Placing the edge under its new usecase")
 		edgeArr = append(edgeArr, name)
 		uc.Spec.Usecases[type_] = edgeArr
 	} else {
+		ctrl.Log.Info("Usecase not found")
 		if uc.Spec.Usecases != nil {
+			ctrl.Log.Info("Making a new usecase section with edge name")
 			uc.Spec.Usecases[type_] = []string{name}
 		}
 	}
+
 	prevEdgeArr := uc.Spec.Usecases[prevUc]
 	i := checkEdgeInArr(prevEdgeArr, name)
 	if i != -1 {
@@ -186,7 +200,7 @@ func UpdateEdgeUc(e operatorv1.Edge, prevUc string) {
 		if err == nil {
 			break
 		}
-		fmt.Println("Error while trying to update the usecases resources")
+		ctrl.Log.Error(err, "Error while trying to update the usecases resources")
 	}
 }
 
@@ -205,20 +219,23 @@ func CheckLTU(edgeList operatorv1.EdgeList, clt client.Client) {
 	eDown := []string{}
 	edges := edgeList.Items
 	now := time.Now().UTC()
+	down := 0
 	for _, se := range edges {
 		if se.Status.LUT == "" {
 			continue
 		}
 		ltu, err := time.Parse(time.RFC850, se.Status.LUT)
 		if err != nil {
-			ctrl.Log.Error(err, "Error while trying to parse the LTU time", "edge name", se.Name, " LTU", se.Status.LUT)
+			ctrl.Log.Error(err, "!!!! Error while trying to parse the LUT time !!!!", "edge name", se.Name, " LTU", se.Status.LUT)
 		}
+		fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 		fmt.Println("Edge name: ", se.Name)
 		fmt.Println("Edge LTU :", se.Status.LUT)
 		fmt.Println("TIME NOW :", now)
 		fmt.Println("DIFFERENCE :", now.Sub(ltu).Minutes())
+		fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 		if now.Sub(ltu).Minutes() > utils.LUT_TIME {
-			if !utils.IsStrEqual(se.Status.UpOrDown, utils.DOWN) {
+			if utils.IsStrEqual(se.Status.UpOrDown, utils.UP) {
 				se.Status.UpOrDown = utils.DOWN
 				se.Status.SqNet = utils.INACTIVE
 				se.Status.HealthPercentage = "0"
@@ -239,8 +256,19 @@ func CheckLTU(edgeList operatorv1.EdgeList, clt client.Client) {
 			}
 			eUp = append(eUp, se.Name)
 		}
-	}
 
+		if strings.EqualFold(strings.ToLower(se.Status.UpOrDown), strings.ToLower(utils.DOWN)) {
+			down++
+		}
+
+	}
+	EdgeUp.Set(float64(len(edges) - down))
+	EdgeDown.Set(float64(down))
+	fmt.Println("Edge up gauge:", EdgeUp.Desc().String())
+	fmt.Println("Edge down gauge:", EdgeDown.Desc().String())
+	fmt.Println("Edge UP :", len(edges)-down)
+	fmt.Println("Edge DOWN :", down)
+	fmt.Println("----------------------------------------------------------------")
 	if len(eDown) <= 0 && len(eUp) <= 0 {
 		return
 	}
@@ -260,9 +288,6 @@ func CheckLTU(edgeList operatorv1.EdgeList, clt client.Client) {
 	wg.Add(1)
 	go utils.Http_(utils.IFTTT_WEBHOOK, "POST", body, nil, &wg)
 
-	EdgeUp.Set(float64(len(eUp)))
-	EdgeDown.Set(float64(len(eDown)))
-
 	if len(eDown) > 0 {
 		wg.Add(1)
 		go LogIncident(fmt.Sprintf("Following edges are 'DOWN': %s", eDown), "Edges are Down", &wg)
@@ -271,29 +296,33 @@ func CheckLTU(edgeList operatorv1.EdgeList, clt client.Client) {
 }
 
 func HandleEdgeUpdateEvent(e operatorv1.Edge) {
-
+	ctrl.Log.Info(">>>> Handling update event for edge", "name", e.Name)
+	ctrl.Log.Info("Checking if health percentage is present")
 	if e.Status.HealthPercentage == "" {
 		ctrl.Log.Info("Health percentage is empty!!!!!, for following edge", "edge", e.Name)
 		return
 	}
+	ctrl.Log.Info("Parsing the helath persentage froms string to float")
+
 	per, err := strconv.ParseFloat(e.Status.HealthPercentage, 64)
 	if err != nil {
 		ctrl.Log.Error(err, "Error while trying to parse the health percentage")
 		return
 	}
 	if per < float64(e.Spec.HealthPercentage) {
-		var wg sync.WaitGroup
+		// var wg sync.WaitGroup
 
 		ctrl.Log.Info("Following edge health is below expected threshold", "edge", e.Name, "health", e.Status.HealthPercentage)
-		body := []byte(fmt.Sprint("Following edge health is below expected threshold", "edge", e.Name, "health", e.Status.HealthPercentage))
-		wg.Add(1)
-		go utils.Http_(utils.IFTTT_WEBHOOK, "POST", body, nil, &wg)
-		wg.Add(1)
-		go LogIncident(fmt.Sprint("Following edge health is below expected threshold", "edge", e.Name, "health", e.Status.HealthPercentage), fmt.Sprint("HP: ", e.Name), &wg)
+		// body := []byte(fmt.Sprint("Following edge health is below expected threshold", "edge", e.Name, "health", e.Status.HealthPercentage))
+		// wg.Add(1)
+		// go utils.Http_(utils.IFTTT_WEBHOOK, "POST", body, nil, &wg)
+		// wg.Add(1)
+		// go LogIncident(fmt.Sprint("Following edge health is below expected threshold", "edge", e.Name, "health", e.Status.HealthPercentage), fmt.Sprint("HP: ", e.Name), &wg)
 	}
 }
 
 func LogIncident(msg, title string, wg *sync.WaitGroup) {
+	ctrl.Log.Info("Creating an incident log in squirrel ui")
 	incidentLogBody := utils.IncidentDbBody{
 		Title:        title,
 		Description:  msg,

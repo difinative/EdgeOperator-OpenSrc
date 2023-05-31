@@ -21,6 +21,9 @@ spec:
       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       tlsConfig:
         insecureSkipVerify: true
+  namespaceSelector:
+    matchNames:
+      - squirrel-operator
   selector:
     matchLabels:
       control-plane: controller-manager

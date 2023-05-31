@@ -54,10 +54,11 @@ func (r *EdgeReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 	_ = log.FromContext(ctx)
 
 	// TODO(user): your logic here
+	ctrl.Log.Info("Running the reconcile loop")
 	edgeList := operatorv1.EdgeList{}
 	error := r.Client.List(ctx, &edgeList, &client.ListOptions{})
 	if error != nil {
-		ctrl.Log.Error(error, "Error while trying to get the edge list")
+		ctrl.Log.Error(error, "!!!! Error while trying to get the edge list !!!!")
 	}
 	utility.CheckLTU(edgeList, r.Client)
 	return ctrl.Result{}, nil
@@ -70,18 +71,23 @@ func (r *EdgeReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		WithEventFilter(
 			predicate.Funcs{
 				CreateFunc: func(ce event.CreateEvent) bool {
-					//Check UC is there and update the edge sqnet and updown status
+					ctrl.Log.Info(">>>>>>>> Create event called for ", "Edge", ce.Object.GetName())
 					edge := ce.Object.(*operatorv1.Edge)
 					utility.HandleCreateEvent(*edge)
 					return false
 				},
 				DeleteFunc: func(de event.DeleteEvent) bool {
+
+					ctrl.Log.Info(">>>>>>>> Create event called for ", "Edge", de.Object.GetName())
+
 					edge := de.Object.(*operatorv1.Edge)
 					utility.HandleDeleteEvent(*edge)
 					return false
 				},
 
 				UpdateFunc: func(ue event.UpdateEvent) bool {
+					ctrl.Log.Info(">>>>>>>> Create event called for ", "Edge", ue.ObjectOld.GetName())
+
 					oldEdge := ue.ObjectOld.(*operatorv1.Edge)
 					newEdge := ue.ObjectNew.(*operatorv1.Edge)
 

@@ -14,16 +14,16 @@ func CheckAndDeleteEmptyKeys(clt *dynamic.Interface, ucs *operatorv1.Usecases) {
 			continue
 		}
 		ctrl.Log.Info("Following usecase has no edge", "Usecase", k)
-		ctrl.Log.Info("Getting the list of user defined usecase")
+		ctrl.Log.Info("Getting the list of user defined usecase vitals")
 		ucList, err := utils.GetListUc_vitals(clt)
 		if err != nil {
-			ctrl.Log.Error(err, "Error while trying to get the list fo usecase")
+			ctrl.Log.Error(err, "Error while trying to get the list fo usecase vitals")
 			delete(ucs.Spec.Usecases, k)
 			continue
 		}
 		for _, u := range ucList.Items {
 			if utils.IsStrEqual(k, u.Spec.Usecase) {
-				ctrl.Log.Info("Found the usecase with the required type", "Usecase", k)
+				ctrl.Log.Info("Found the usecase vitals with the required type", "Usecase", k)
 				err = utils.DeleteUc_vitals(clt, &u)
 				if err != nil {
 					ctrl.Log.Error(err, "Error while trying to delete the usecase")
