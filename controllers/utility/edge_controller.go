@@ -257,7 +257,7 @@ func CheckLTU(edgeList operatorv1.EdgeList, clt client.Client) {
 			eUp = append(eUp, se.Name)
 		}
 
-		if strings.EqualFold(strings.ToLower(se.Status.UpOrDown), strings.ToLower(utils.DOWN)) {
+		if strings.EqualFold(strings.ToLower(se.Status.UpOrDown), strings.ToLower(utils.DOWN)) || utils.IsStrEqual(se.Status.UpOrDown, utils.NA) {
 			down++
 		}
 
