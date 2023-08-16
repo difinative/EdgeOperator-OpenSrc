@@ -13,6 +13,9 @@ You’ll need a Kubernetes cluster to run against. You can use [KIND](https://si
 
 ```sh
 kubectl apply -f config/samples/
+
+
+
 ```
 
 2. Build and push your image to the location specified by `IMG`:
